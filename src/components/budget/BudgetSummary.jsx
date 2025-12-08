@@ -1,7 +1,10 @@
 import { Wallet, TrendingDown, TrendingUp, Percent } from 'lucide-react';
 
 const BudgetSummary = ({ budgetData }) => {
-    const { monthlyBudget = 0, spentSoFar = 0, remaining = 0, percentUsed = 0 } = budgetData;
+    // Handle both budgetData.budget and direct budgetData structures
+    const data = budgetData?.budget || budgetData || {};
+    const { monthlyBudget = 0, spentSoFar = 0, remaining = 0, percentageUsed = 0, percentUsed = 0 } = data;
+    const actualPercentUsed = percentageUsed || percentUsed;
 
     const stats = [
         {
@@ -30,7 +33,7 @@ const BudgetSummary = ({ budgetData }) => {
         },
         {
             title: 'Percentage Used',
-            value: `${Math.round(percentUsed)}%`,
+            value: `${Math.round(actualPercentUsed)}%`,
             subtitle: 'Of total budget',
             icon: Percent,
             gradient: 'from-purple-500 to-purple-600',

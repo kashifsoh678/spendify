@@ -1,13 +1,21 @@
+import { useEffect } from 'react';
 import { useForm, Controller } from 'react-hook-form';
 import { DollarSign } from 'lucide-react';
 import { Input } from '../common';
 
 const BudgetForm = ({ currentBudget, onSave, isLoading }) => {
-    const { control, handleSubmit, formState: { errors } } = useForm({
+    const { control, handleSubmit, formState: { errors }, reset } = useForm({
         defaultValues: {
             amount: currentBudget || ''
         }
     });
+
+    // Update form when currentBudget changes (after reload or update)
+    useEffect(() => {
+        if (currentBudget) {
+            reset({ amount: currentBudget });
+        }
+    }, [currentBudget, reset]);
 
     const onSubmit = (data) => {
         onSave(parseFloat(data.amount));

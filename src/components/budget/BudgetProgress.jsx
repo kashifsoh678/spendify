@@ -1,12 +1,16 @@
-const BudgetProgress = ({ percentUsed }) => {
-    // Determine color based on percentage
-    const getColor = () => {
-        if (percentUsed < 50) return { stroke: '#10b981', text: 'text-green-600' }; // Green
-        if (percentUsed < 85) return { stroke: '#f59e0b', text: 'text-yellow-600' }; // Yellow
-        return { stroke: '#ef4444', text: 'text-red-600' }; // Red
+const BudgetProgress = ({ percentUsed, statusColor = 'green' }) => {
+    // Map API statusColor to actual color values
+    const getColorFromStatus = (status) => {
+        const colorMap = {
+            'green': { stroke: '#10b981', text: 'text-green-600' },
+            'yellow': { stroke: '#f59e0b', text: 'text-yellow-600' },
+            'orange': { stroke: '#fb923c', text: 'text-orange-600' },
+            'red': { stroke: '#ef4444', text: 'text-red-600' }
+        };
+        return colorMap[status] || colorMap['green'];
     };
 
-    const { stroke, text } = getColor();
+    const { stroke, text } = getColorFromStatus(statusColor);
     const radius = 70;
     const circumference = 2 * Math.PI * radius;
 

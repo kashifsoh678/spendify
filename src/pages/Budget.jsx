@@ -1,52 +1,21 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import toast, { Toaster } from 'react-hot-toast';
 import BudgetForm from '../components/budget/BudgetForm';
 import BudgetSummary from '../components/budget/BudgetSummary';
 import BudgetProgress from '../components/budget/BudgetProgress';
 import BudgetAlerts from '../components/budget/BudgetAlerts';
-import { getBudget, setBudget, getBudgetStatus, getAIForecast } from '../services/budgetService';
+import { useBudget } from '../context/BudgetContext';
 
 const Budget = () => {
-    const [budgetData, setBudgetData] = useState(null);
-    const [budgetStatus, setBudgetStatus] = useState(null);
-    const [aiForecast, setAIForecast] = useState(null);
-    const [loading, setLoading] = useState(true);
+    const { budget, budgetStatus, loading, setBudget: updateBudget } = useBudget();
     const [saving, setSaving] = useState(false);
-
-    // Fetch all budget data
-    const fetchBudgetData = async () => {
-        setLoading(true);
-        try {
-            const [budget, status, forecast] = await Promise.all([
-                getBudget(),
-                getBudgetStatus(),
-                getAIForecast()
-            ]);
-
-            setBudgetData(budget);
-            setBudgetStatus(status);
-            setAIForecast(forecast);
-        } catch (error) {
-            console.error('Error fetching budget data:', error);
-            toast.error('Failed to load budget data');
-        } finally {
-            setLoading(false);
-        }
-    };
-
-    // Initial load
-    useEffect(() => {
-        fetchBudgetData();
-    }, []);
 
     // Handle budget save/update
     const handleSaveBudget = async (amount) => {
         setSaving(true);
         try {
-            await setBudget(amount);
+            await updateBudget(amount);
             toast.success('Budget updated successfully!');
-            // Refresh all data
-            await fetchBudgetData();
         } catch (error) {
             toast.error('Failed to update budget');
             console.error('Error saving budget:', error);
@@ -54,17 +23,6 @@ const Budget = () => {
             setSaving(false);
         }
     };
-
-    if (loading) {
-        return (
-            <div className="flex items-center justify-center min-h-[400px]">
-                <div className="text-center">
-                    <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[var(--color-primary)] mx-auto"></div>
-                    <p className="mt-4 text-gray-600 dark:text-gray-400">Loading budget data...</p>
-                </div>
-            </div>
-        );
-    }
 
     return (
         <div className="space-y-6">
@@ -88,21 +46,28 @@ const Budget = () => {
                 {/* Left Column - Budget Form & Progress stacked */}
                 <div className="space-y-6">
                     <BudgetForm
-                        currentBudget={budgetData?.monthlyBudget}
+                        currentBudget={budget?.monthlyBudget}
                         onSave={handleSaveBudget}
                         isLoading={saving}
                     />
 
-                    {budgetStatus && (
-                        <BudgetProgress percentUsed={budgetStatus.percentUsed} />
+                    {budgetStatus && budgetStatus.budget && (
+                        <BudgetProgress
+                            percentUsed={budgetStatus.budget.percentageUsed || 0}
+                            statusColor={budgetStatus.budget.statusColor || budgetStatus.statusColor || 'green'}
+                        />
                     )}
                 </div>
 
                 {/* Right Column - Budget Alerts */}
                 {budgetStatus && (
                     <BudgetAlerts
-                        alerts={budgetStatus.alerts}
-                        aiForecast={aiForecast}
+                        alerts={budgetStatus.alerts || [{
+                            type: 'info',
+                            message: budgetStatus.alert,
+                            severity: 'medium'
+                        }]}
+                        aiForecast={null}
                     />
                 )}
             </div>
