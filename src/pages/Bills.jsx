@@ -5,16 +5,16 @@ import BillAlerts from '../components/bills/BillAlerts';
 import BillFilterBar from '../components/bills/BillFilterBar';
 import BillsTable from '../components/bills/BillsTable';
 import AddBillModal from '../components/bills/AddBillModal';
-import { Pagination } from '../components/common';
-import { getBills, addBill, updateBill, deleteBill } from '../services/billsService';
+import { Pagination, ConfirmationModal } from '../components/common';
+import { useBills } from '../context/BillsContext';
 
 const Bills = () => {
-    const [bills, setBills] = useState([]);
-    const [allBills, setAllBills] = useState([]); // Unfiltered bills for alerts
-    const [loading, setLoading] = useState(true);
+    const { bills, upcomingBills, pagination, loading, fetchBills, createBill, markAsPaid, deleteBill } = useBills();
+
     const [isModalOpen, setIsModalOpen] = useState(false);
+    const [isConfirmOpen, setIsConfirmOpen] = useState(false);
+    const [billToDelete, setBillToDelete] = useState(null);
     const [currentPage, setCurrentPage] = useState(1);
-    const [totalPages, setTotalPages] = useState(1);
 
     const [filters, setFilters] = useState({
         search: '',
@@ -23,53 +23,18 @@ const Bills = () => {
         endDate: ''
     });
 
-    // Fetch bills (filtered)
-    const fetchBills = async () => {
-        setLoading(true);
-        try {
-            const response = await getBills({
+    // Debounced fetch with delay for search input
+    useEffect(() => {
+        const debounceTimer = setTimeout(() => {
+            fetchBills({
                 page: currentPage,
                 limit: 10,
                 ...filters
             });
-            // Handle both array response (legacy/simple) and paginated object response
-            if (Array.isArray(response)) {
-                setBills(response);
-                setTotalPages(1);
-            } else {
-                setBills(response.bills || []);
-                setTotalPages(response.totalPages || 1);
-            }
-        } catch (error) {
-            console.error('Error fetching bills:', error);
-            toast.error('Failed to load bills');
-        } finally {
-            setLoading(false);
-        }
-    };
+        }, 500); // 500ms delay
 
-    // Fetch all bills (unfiltered) for alerts
-    const fetchAllBills = async () => {
-        try {
-            const response = await getBills({
-                page: 1,
-                limit: 1000 // Get all bills for alerts
-            });
-            if (Array.isArray(response)) {
-                setAllBills(response);
-            } else {
-                setAllBills(response.bills || []);
-            }
-        } catch (error) {
-            console.error('Error fetching all bills:', error);
-        }
-    };
-
-    // Initial load
-    useEffect(() => {
-        fetchBills();
-        fetchAllBills();
-    }, [currentPage, filters]);
+        return () => clearTimeout(debounceTimer);
+    }, [currentPage, filters, fetchBills]);
 
     // Handle filter changes
     const handleFilterChange = (newFilters) => {
@@ -91,12 +56,16 @@ const Bills = () => {
     // Handle add bill
     const handleAddBill = async (billData) => {
         try {
-            await addBill(billData);
+            await createBill(billData);
             toast.success('Bill added successfully!');
-            fetchBills();
-            fetchAllBills(); // Refresh alerts
+            // Refresh current page
+            await fetchBills({
+                page: currentPage,
+                limit: 10,
+                ...filters
+            });
         } catch (error) {
-            toast.error('Failed to add bill');
+            toast.error(error.message || 'Failed to add bill');
             throw error;
         }
     };
@@ -104,29 +73,30 @@ const Bills = () => {
     // Handle mark as paid
     const handleMarkPaid = async (id) => {
         try {
-            await updateBill(id, { status: 'paid' });
+            await markAsPaid(id);
             toast.success('Bill marked as paid!');
-            fetchBills();
-            fetchAllBills(); // Refresh alerts
         } catch (error) {
-            toast.error('Failed to update bill');
+            toast.error(error.message || 'Failed to update bill');
             console.error('Error updating bill:', error);
         }
     };
 
     // Handle delete
-    const handleDelete = async (id) => {
-        if (!window.confirm('Are you sure you want to delete this bill?')) {
-            return;
-        }
+    const handleDeleteBill = (id) => {
+        setBillToDelete(id);
+        setIsConfirmOpen(true);
+    };
+
+    const confirmDelete = async () => {
+        if (!billToDelete) return;
 
         try {
-            await deleteBill(id);
+            await deleteBill(billToDelete);
             toast.success('Bill deleted successfully!');
-            fetchBills();
-            fetchAllBills(); // Refresh alerts
         } catch (error) {
-            toast.error('Failed to delete bill');
+            toast.error(error.message || 'Failed to delete bill');
+        } finally {
+            setBillToDelete(null);
         }
     };
 
@@ -152,7 +122,7 @@ const Bills = () => {
             </div>
 
             {/* Alerts */}
-            <BillAlerts bills={allBills} />
+            <BillAlerts bills={upcomingBills} />
 
             {/* Filter Bar */}
             <BillFilterBar
@@ -168,24 +138,38 @@ const Bills = () => {
                 </h2>
                 <BillsTable
                     bills={bills}
-                    onDelete={handleDelete}
+                    onDelete={handleDeleteBill}
                     onMarkPaid={handleMarkPaid}
                     loading={loading}
                 />
             </div>
 
             {/* Pagination */}
-            <Pagination
-                currentPage={currentPage}
-                totalPages={totalPages}
-                onPageChange={setCurrentPage}
-            />
+            {pagination && (
+                <Pagination
+                    currentPage={pagination.page || currentPage}
+                    totalPages={pagination.totalPages || 1}
+                    onPageChange={setCurrentPage}
+                />
+            )}
 
             {/* Add Bill Modal */}
             <AddBillModal
                 isOpen={isModalOpen}
                 onClose={() => setIsModalOpen(false)}
                 onSubmit={handleAddBill}
+            />
+
+            {/* Delete Confirmation Modal */}
+            <ConfirmationModal
+                isOpen={isConfirmOpen}
+                onClose={() => setIsConfirmOpen(false)}
+                onConfirm={confirmDelete}
+                title="Delete Bill"
+                message="Are you sure you want to delete this bill? This action cannot be undone."
+                confirmText="Delete"
+                cancelText="Cancel"
+                variant="danger"
             />
         </div>
     );

@@ -71,7 +71,7 @@ const BillsTable = ({ bills, onDelete, onMarkPaid, loading }) => {
                                 const BadgeIcon = badge.icon;
 
                                 return (
-                                    <tr key={bill.id} className="hover:bg-gray-50 dark:hover:bg-gray-800/50 transition-colors">
+                                    <tr key={bill._id || bill.id} className="hover:bg-gray-50 dark:hover:bg-gray-800/50 transition-colors">
                                         <td className="px-6 py-4 whitespace-nowrap">
                                             <span className="text-sm font-medium text-gray-900 dark:text-white">
                                                 {bill.billName}
@@ -97,7 +97,7 @@ const BillsTable = ({ bills, onDelete, onMarkPaid, loading }) => {
                                             <div className="flex items-center justify-center gap-2">
                                                 {bill.status === 'pending' && (
                                                     <button
-                                                        onClick={() => onMarkPaid(bill.id)}
+                                                        onClick={() => onMarkPaid(bill._id || bill.id)}
                                                         disabled={loading}
                                                         className="p-1 text-green-600 hover:text-green-800 dark:text-green-400 dark:hover:text-green-300"
                                                         title="Mark as Paid"
@@ -106,7 +106,7 @@ const BillsTable = ({ bills, onDelete, onMarkPaid, loading }) => {
                                                     </button>
                                                 )}
                                                 <button
-                                                    onClick={() => onDelete(bill.id)}
+                                                    onClick={() => onDelete(bill._id || bill.id)}
                                                     disabled={loading}
                                                     className="p-1 text-red-600 hover:text-red-800 dark:text-red-400 dark:hover:text-red-300"
                                                     title="Delete"
@@ -131,7 +131,7 @@ const BillsTable = ({ bills, onDelete, onMarkPaid, loading }) => {
 
                     return (
                         <div
-                            key={bill.id}
+                            key={bill._id || bill.id}
                             className="rounded-xl bg-white p-4 shadow-sm dark:bg-[#1E1E2D] border border-gray-200 dark:border-gray-700"
                         >
                             <div className="flex items-start justify-between mb-3">
@@ -155,7 +155,7 @@ const BillsTable = ({ bills, onDelete, onMarkPaid, loading }) => {
                                 <div className="flex items-center gap-2">
                                     {bill.status === 'pending' && (
                                         <button
-                                            onClick={() => onMarkPaid(bill.id)}
+                                            onClick={() => onMarkPaid(bill._id || bill.id)}
                                             disabled={loading}
                                             className="p-2 text-green-600 hover:bg-green-50 rounded-lg dark:text-green-400 dark:hover:bg-green-900/20"
                                         >
@@ -163,7 +163,7 @@ const BillsTable = ({ bills, onDelete, onMarkPaid, loading }) => {
                                         </button>
                                     )}
                                     <button
-                                        onClick={() => onDelete(bill.id)}
+                                        onClick={() => onDelete(bill._id || bill.id)}
                                         disabled={loading}
                                         className="p-2 text-red-600 hover:bg-red-50 rounded-lg dark:text-red-400 dark:hover:bg-red-900/20"
                                     >

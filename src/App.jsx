@@ -2,6 +2,7 @@ import { Routes, Route, Navigate } from 'react-router-dom';
 import { AuthProvider } from './context/AuthContext';
 import { TransactionProvider } from './context/TransactionContext';
 import { BudgetProvider } from './context/BudgetContext';
+import { BillsProvider } from './context/BillsContext';
 import ProtectedRoute from './components/ProtectedRoute';
 import GuestRoute from './components/GuestRoute';
 import MainLayout from './layouts/MainLayout';
@@ -40,7 +41,9 @@ function App() {
             <ProtectedRoute>
               <TransactionProvider>
                 <BudgetProvider>
-                  <MainLayout />
+                  <BillsProvider>
+                    <MainLayout />
+                  </BillsProvider>
                 </BudgetProvider>
               </TransactionProvider>
             </ProtectedRoute>
