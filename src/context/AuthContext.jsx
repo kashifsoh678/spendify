@@ -25,16 +25,9 @@ export const AuthProvider = ({ children }) => {
           setUser(response.data.user);
         } catch (err) {
           console.error('Token verification failed:', err);
-          // If it's a mock token (for frontend-only testing), keep it
-          if (storedToken.startsWith('mock-jwt-token-')) {
-            const mockUser = JSON.parse(localStorage.getItem('mockUser') || '{"name":"Test User"}');
-            setUser(mockUser);
-          } else {
-            // Real token is invalid, clear it
-            localStorage.removeItem('token');
-            setToken(null);
-            setUser(null);
-          }
+          localStorage.removeItem('token');
+          setToken(null);
+          setUser(null);
         }
       }
       setLoading(false);
@@ -57,19 +50,7 @@ export const AuthProvider = ({ children }) => {
 
       return { success: true };
     } catch (err) {
-      // Fallback to mock authentication for frontend-only testing
-      if (err.code === 'ERR_NETWORK' || err.message.includes('Network Error')) {
-        console.warn('Backend not available, using mock authentication');
-        const mockToken = 'mock-jwt-token-' + Date.now();
-        const mockUser = { email, name: email.split('@')[0] };
 
-        localStorage.setItem('token', mockToken);
-        localStorage.setItem('mockUser', JSON.stringify(mockUser));
-        setToken(mockToken);
-        setUser(mockUser);
-
-        return { success: true };
-      }
 
       const errorMessage = err.response?.data?.message || 'Login failed. Please check your credentials.';
       setError(errorMessage);
@@ -91,21 +72,50 @@ export const AuthProvider = ({ children }) => {
 
       return { success: true };
     } catch (err) {
-      // Fallback to mock authentication for frontend-only testing
-      if (err.code === 'ERR_NETWORK' || err.message.includes('Network Error')) {
-        console.warn('Backend not available, using mock authentication');
-        const mockToken = 'mock-jwt-token-' + Date.now();
-        const mockUser = { name, email };
 
-        localStorage.setItem('token', mockToken);
-        localStorage.setItem('mockUser', JSON.stringify(mockUser));
-        setToken(mockToken);
-        setUser(mockUser);
-
-        return { success: true };
-      }
 
       const errorMessage = err.response?.data?.message || 'Registration failed. Please try again.';
+      setError(errorMessage);
+      throw new Error(errorMessage);
+    }
+  }
+
+
+  const forgotPassword = async (email) => {
+    try {
+      setError(null);
+      await api.post('/auth/forgotpassword', { email });
+      return { success: true };
+    } catch (err) {
+
+
+      const errorMessage = err.response?.data?.message || 'Failed to send reset email. Please try again.';
+      setError(errorMessage);
+      throw new Error(errorMessage);
+    }
+  };
+
+  const resetPassword = async (token, password) => {
+    try {
+      setError(null);
+      const response = await api.put(`/auth/resetpassword/${token}`, { password });
+
+      const { token: authToken, user: userData } = response.data;
+
+      // Save token to localStorage and update state
+      if (authToken) {
+        localStorage.setItem('token', authToken);
+        setToken(authToken);
+      }
+      if (userData) {
+        setUser(userData);
+      }
+
+      return { success: true };
+    } catch (err) {
+
+
+      const errorMessage = err.response?.data?.message || 'Failed to reset password. Please try again.';
       setError(errorMessage);
       throw new Error(errorMessage);
     }
@@ -113,7 +123,7 @@ export const AuthProvider = ({ children }) => {
 
   const logout = () => {
     localStorage.removeItem('token');
-    localStorage.removeItem('mockUser');
+    localStorage.removeItem('token');
     setToken(null);
     setUser(null);
     setError(null);
@@ -124,6 +134,8 @@ export const AuthProvider = ({ children }) => {
     token,
     login,
     register,
+    forgotPassword,
+    resetPassword,
     logout,
     loading,
     error,
@@ -137,3 +149,4 @@ export const AuthProvider = ({ children }) => {
     </AuthContext.Provider>
   );
 };
+

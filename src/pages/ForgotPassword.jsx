@@ -1,16 +1,23 @@
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useForm, Controller } from 'react-hook-form';
-import { ArrowRight, Mail, ArrowLeft } from 'lucide-react';
+import { ArrowRight, Mail, ArrowLeft, AlertCircle } from 'lucide-react';
+import { useAuth } from '../context/AuthContext';
 
 const ForgotPassword = () => {
     const { control, handleSubmit, formState: { errors, isSubmitting }, getValues } = useForm();
+    const [apiError, setApiError] = useState(null);
     const [isSubmitted, setIsSubmitted] = useState(false);
+    const { forgotPassword } = useAuth();
 
     const onSubmit = async (data) => {
-        // Simulate API call
-        await new Promise(resolve => setTimeout(resolve, 1500));
-        setIsSubmitted(true);
+        try {
+            setApiError(null);
+            await forgotPassword(data.email);
+            setIsSubmitted(true);
+        } catch (error) {
+            setApiError(error.message);
+        }
     };
 
     if (isSubmitted) {
@@ -60,6 +67,16 @@ const ForgotPassword = () => {
                     No worries, we'll send you reset instructions.
                 </p>
             </div>
+
+            {/* API Error Message */}
+            {apiError && (
+                <div className="mb-6 rounded-xl bg-red-50 p-4 dark:bg-red-900/20">
+                    <div className="flex items-center gap-3">
+                        <AlertCircle className="h-5 w-5 text-red-600 dark:text-red-400" />
+                        <p className="text-sm text-red-600 dark:text-red-400">{apiError}</p>
+                    </div>
+                </div>
+            )}
 
             <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
                 <div className="relative">

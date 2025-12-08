@@ -28,8 +28,8 @@ const Login = () => {
   return (
     <>
       <div className="mb-10">
-        <h2 className="text-3xl font-bold text-[var(--color-text-main)]">Welcome back</h2>
-        <p className="mt-2 text-[var(--color-text-muted)]">
+        <h2 className="text-3xl font-bold text-text-main">Welcome back</h2>
+        <p className="mt-2 text-text-muted">
           Please enter your details to sign in.
         </p>
       </div>
@@ -152,7 +152,7 @@ const Login = () => {
         <button
           type="submit"
           disabled={isSubmitting}
-          className="group relative flex w-full justify-center rounded-xl bg-[var(--color-primary)] px-3 py-3.5 text-sm font-semibold text-white shadow-[var(--shadow-glow)] transition-all hover:bg-[var(--color-primary-dark)] hover:shadow-lg focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--color-primary)] disabled:opacity-70"
+          className="group relative flex w-full justify-center rounded-xl bg-primary px-3 py-3.5 text-sm font-semibold text-white shadow-[var(--shadow-glow)] transition-all hover:bg-[var(--color-primary-dark)] hover:shadow-lg focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--color-primary)] disabled:opacity-70"
         >
           {isSubmitting ? (
             <svg className="h-5 w-5 animate-spin text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
@@ -167,11 +167,11 @@ const Login = () => {
         </button>
       </form>
 
-      <p className="mt-10 text-center text-sm text-[var(--color-text-muted)]">
+      <p className="mt-10 text-center text-sm text-text-muted">
         Don't have an account?{' '}
         <Link
           to="/register"
-          className="font-semibold leading-6 text-[var(--color-primary)] hover:text-[var(--color-primary-dark)]"
+          className="font-semibold leading-6 text-primary hover:text-primary-dark"
         >
           Create an account
         </Link>
