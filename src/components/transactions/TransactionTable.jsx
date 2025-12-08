@@ -49,7 +49,7 @@ const TransactionTable = ({ transactions, onEdit, onDelete, loading, readOnly = 
                                 const mood = getMoodByValue(transaction.mood);
 
                                 return (
-                                    <tr key={transaction.id} className="hover:bg-gray-50 dark:hover:bg-gray-800/50 transition-colors">
+                                    <tr key={transaction._id || transaction.id} className="hover:bg-gray-50 dark:hover:bg-gray-800/50 transition-colors">
                                         <td className="px-6 py-4 whitespace-nowrap">
                                             <div className="flex items-center gap-3">
                                                 <span className="text-2xl">{category.icon}</span>
@@ -91,7 +91,7 @@ const TransactionTable = ({ transactions, onEdit, onDelete, loading, readOnly = 
                                                         <Edit2 className="h-4 w-4" />
                                                     </button>
                                                     <button
-                                                        onClick={() => onDelete(transaction.id)}
+                                                        onClick={() => onDelete(transaction._id || transaction.id)}
                                                         className="p-1 text-red-600 hover:text-red-800 dark:text-red-400 dark:hover:text-red-300"
                                                         title="Delete"
                                                     >
@@ -115,7 +115,7 @@ const TransactionTable = ({ transactions, onEdit, onDelete, loading, readOnly = 
                     const mood = getMoodByValue(transaction.mood);
 
                     return (
-                        <div key={transaction.id} className="rounded-xl bg-white p-4 shadow-sm dark:bg-[#1E1E2D] border border-gray-200 dark:border-gray-700">
+                        <div key={transaction._id || transaction.id} className="rounded-xl bg-white p-4 shadow-sm dark:bg-[#1E1E2D] border border-gray-200 dark:border-gray-700">
                             <div className="flex items-start justify-between mb-3">
                                 <div className="flex items-center gap-3">
                                     <span className="text-2xl">{category.icon}</span>
@@ -148,7 +148,7 @@ const TransactionTable = ({ transactions, onEdit, onDelete, loading, readOnly = 
                                             <Edit2 className="h-4 w-4" />
                                         </button>
                                         <button
-                                            onClick={() => onDelete(transaction.id)}
+                                            onClick={() => onDelete(transaction._id || transaction.id)}
                                             className="p-2 text-red-600 hover:bg-red-50 rounded-lg dark:text-red-400 dark:hover:bg-red-900/20"
                                         >
                                             <Trash2 className="h-4 w-4" />

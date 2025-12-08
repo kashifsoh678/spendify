@@ -5,17 +5,17 @@ import StatsRow from '../components/transactions/StatsRow';
 import FilterBar from '../components/transactions/FilterBar';
 import TransactionTable from '../components/transactions/TransactionTable';
 import AddTransactionModal from '../components/transactions/AddTransactionModal';
-import { Pagination } from '../components/common';
-import { getTransactions, getMonthlyStats, addTransaction, updateTransaction, deleteTransaction } from '../services/transactionService';
+import { Pagination, ConfirmationModal } from '../components/common';
+
+import { useTransaction } from '../context/TransactionContext';
 
 const Transactions = () => {
-    const [transactions, setTransactions] = useState([]);
-    const [stats, setStats] = useState({ totalIncome: 0, totalExpenses: 0, netBalance: 0 });
-    const [loading, setLoading] = useState(true);
+    const { transactions, pagination, addTransaction, updateTransaction, deleteTransaction, loading, fetchTransactions } = useTransaction();
+    const [stats, setStats] = useState({ totalIncome: 0, totalExpenses: 0, netBalance: 0 }); // Local stats for this page view if needed, or derived
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [editingTransaction, setEditingTransaction] = useState(null);
     const [currentPage, setCurrentPage] = useState(1);
-    const [totalPages, setTotalPages] = useState(1);
+    const [itemsPerPage] = useState(10);
 
     const [filters, setFilters] = useState({
         search: '',
@@ -25,41 +25,44 @@ const Transactions = () => {
         endDate: ''
     });
 
-    // Fetch transactions
-    const fetchTransactions = async () => {
-        setLoading(true);
-        try {
-            const response = await getTransactions({
+    const [isConfirmOpen, setIsConfirmOpen] = useState(false);
+    const [transactionToDelete, setTransactionToDelete] = useState(null);
+
+    // Debounced fetch with delay for search input
+    useEffect(() => {
+        const debounceTimer = setTimeout(() => {
+            fetchTransactions({
                 page: currentPage,
-                limit: 10,
+                limit: itemsPerPage,
                 ...filters
             });
+        }, 500); // 500ms delay
 
-            setTransactions(response.transactions || []);
-            setTotalPages(response.totalPages || 1);
-        } catch (error) {
-            console.error('Error fetching transactions:', error);
-            toast.error('Failed to load transactions');
-        } finally {
-            setLoading(false);
-        }
+        return () => clearTimeout(debounceTimer);
+    }, [currentPage, filters, fetchTransactions]);
+
+    // Calculate stats from current view transactions dynamically
+    const calculateStats = () => {
+        const income = transactions
+            .filter(t => t.type === 'income')
+            .reduce((acc, t) => acc + (Number(t.amount) || 0), 0);
+        const expense = transactions
+            .filter(t => t.type === 'expense')
+            .reduce((acc, t) => acc + (Number(t.amount) || 0), 0);
+        return {
+            totalIncome: income,
+            totalExpenses: expense,
+            netBalance: income - expense
+        };
     };
 
-    // Fetch monthly stats
-    const fetchStats = async () => {
-        try {
-            const data = await getMonthlyStats();
-            setStats(data);
-        } catch (error) {
-            console.error('Error fetching stats:', error);
-        }
-    };
-
-    // Initial load
     useEffect(() => {
-        fetchTransactions();
-        fetchStats();
-    }, [currentPage, filters]);
+        setStats(calculateStats());
+    }, [transactions]);
+
+
+
+
 
     // Handle filter changes
     const handleFilterChange = (newFilters) => {
@@ -84,41 +87,41 @@ const Transactions = () => {
         try {
             await addTransaction(transactionData);
             toast.success('Transaction added successfully!');
-            fetchTransactions();
-            fetchStats();
+            setIsModalOpen(false); // Close modal on success
         } catch (error) {
-            toast.error('Failed to add transaction');
-            throw error;
+            toast.error(error.message || 'Failed to add transaction');
+            // throw error; // Don't throw if handled
         }
     };
 
     // Handle edit transaction
     const handleEditTransaction = async (transactionData) => {
         try {
-            await updateTransaction(editingTransaction.id, transactionData);
+            await updateTransaction(editingTransaction._id, transactionData); // Use _id from MongoDB
             toast.success('Transaction updated successfully!');
+            setIsModalOpen(false);
             setEditingTransaction(null);
-            fetchTransactions();
-            fetchStats();
         } catch (error) {
-            toast.error('Failed to update transaction');
-            throw error;
+            toast.error(error.message || 'Failed to update transaction');
         }
     };
 
     // Handle delete transaction
-    const handleDeleteTransaction = async (id) => {
-        if (!window.confirm('Are you sure you want to delete this transaction?')) {
-            return;
-        }
+    const handleDeleteTransaction = (id) => {
+        setTransactionToDelete(id);
+        setIsConfirmOpen(true);
+    };
+
+    const confirmDelete = async () => {
+        if (!transactionToDelete) return;
 
         try {
-            await deleteTransaction(id);
+            await deleteTransaction(transactionToDelete);
             toast.success('Transaction deleted successfully!');
-            fetchTransactions();
-            fetchStats();
         } catch (error) {
-            toast.error('Failed to delete transaction');
+            toast.error(error.message || 'Failed to delete transaction');
+        } finally {
+            setTransactionToDelete(null);
         }
     };
 
@@ -179,8 +182,8 @@ const Transactions = () => {
             </div>
             {/* Pagination */}
             <Pagination
-                currentPage={currentPage}
-                totalPages={totalPages}
+                currentPage={pagination.page}
+                totalPages={pagination.totalPages}
                 onPageChange={setCurrentPage}
             />
 
@@ -190,6 +193,18 @@ const Transactions = () => {
                 onClose={handleCloseModal}
                 onSubmit={editingTransaction ? handleEditTransaction : handleAddTransaction}
                 initialData={editingTransaction}
+            />
+
+            {/* Delete Confirmation Modal */}
+            <ConfirmationModal
+                isOpen={isConfirmOpen}
+                onClose={() => setIsConfirmOpen(false)}
+                onConfirm={confirmDelete}
+                title="Delete Transaction"
+                message="Are you sure you want to delete this transaction? This action cannot be undone."
+                confirmText="Delete"
+                cancelText="Cancel"
+                variant="danger"
             />
         </div>
     );

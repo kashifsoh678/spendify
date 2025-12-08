@@ -22,7 +22,9 @@ export const AuthProvider = ({ children }) => {
         try {
           // Verify token and get user data
           const response = await api.get('/auth/me');
-          setUser(response.data.user);
+          // Handle potential 'data' wrapper
+          const responseData = response.data.data || response.data;
+          setUser(responseData.user || responseData);
         } catch (err) {
           console.error('Token verification failed:', err);
           localStorage.removeItem('token');
@@ -41,7 +43,13 @@ export const AuthProvider = ({ children }) => {
       setError(null);
       const response = await api.post('/auth/login', { email, password });
 
-      const { token: authToken, user: userData } = response.data;
+      // Handle potential 'data' wrapper from standard API response
+      const responseData = response.data.data || response.data;
+      const { token: authToken, user: userData } = responseData;
+
+      if (!authToken) {
+        throw new Error('Token missing in response');
+      }
 
       // Save token to localStorage
       localStorage.setItem('token', authToken);
@@ -50,8 +58,7 @@ export const AuthProvider = ({ children }) => {
 
       return { success: true };
     } catch (err) {
-
-
+      console.error("Login Parsing Error or API Error:", err);
       const errorMessage = err.response?.data?.message || 'Login failed. Please check your credentials.';
       setError(errorMessage);
       throw new Error(errorMessage);
@@ -63,7 +70,13 @@ export const AuthProvider = ({ children }) => {
       setError(null);
       const response = await api.post('/auth/register', { name, email, password });
 
-      const { token: authToken, user: userData } = response.data;
+      // Handle potential 'data' wrapper
+      const responseData = response.data.data || response.data;
+      const { token: authToken, user: userData } = responseData;
+
+      if (!authToken) {
+        throw new Error('Token missing in response');
+      }
 
       // Save token to localStorage
       localStorage.setItem('token', authToken);
@@ -72,8 +85,7 @@ export const AuthProvider = ({ children }) => {
 
       return { success: true };
     } catch (err) {
-
-
+      console.error("Register Parsing Error or API Error:", err);
       const errorMessage = err.response?.data?.message || 'Registration failed. Please try again.';
       setError(errorMessage);
       throw new Error(errorMessage);

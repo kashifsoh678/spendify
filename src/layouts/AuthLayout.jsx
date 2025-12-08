@@ -36,7 +36,7 @@ const AuthLayout = () => {
   const content = getPageContent();
 
   return (
-    <div className="flex min-h-screen w-full overflow-hidden bg-[var(--color-background)] w-screen">
+    <div className="flex min-h-screen  overflow-hidden bg-[var(--color-background)] w-screen">
       {/* Left Side - Brand/Visual */}
       <div className="hidden w-1/2 flex-col justify-between bg-[var(--color-primary)] p-12 text-white lg:flex relative overflow-hidden">
         <div className="absolute inset-0 bg-gradient-to-br from-[var(--color-primary)] to-[var(--color-secondary)] opacity-90"></div>
