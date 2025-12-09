@@ -227,11 +227,25 @@ export const getAllAIInsights = async () => {
   }
 };
 
+/**
+ * Get consolidated AI insights for dashboard
+ * @returns {Promise<Object>} AI insights (forecast, personality, suggestion)
+ */
+export const getDashboardInsights = async () => {
+  try {
+    const response = await api.get("/dashboard/ai-insights");
+    return response.data?.data || response.data;
+  } catch (error) {
+    console.warn("AI insights API not available, using fallback");
+    throw error.response?.data || error.message;
+  }
+};
+
 export default {
   getAIForecast,
   getPersonality,
   getMoodInsights,
   getSavings,
   getChallenges,
-  getAllAIInsights,
+  getDashboardInsights,
 };

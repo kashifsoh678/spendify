@@ -1,32 +1,79 @@
-import { AlertTriangle, AlertCircle, TrendingUp } from 'lucide-react';
+import { Bell, AlertCircle, Calendar, TrendingUp, Target, DollarSign } from 'lucide-react';
+
+// Map alert type to icon
+const getAlertIcon = (type) => {
+    const iconMap = {
+        'budget': DollarSign,
+        'bill': Calendar,
+        'trend': TrendingUp,
+        'goal': Target,
+        'warning': AlertCircle,
+        'danger': AlertCircle,
+        'info': TrendingUp,
+    };
+    return iconMap[type] || AlertCircle;
+};
+
+// Map severity to colors (supports both new API format and old format)
+const getSeverityColors = (severity, type) => {
+    // New API format (severity: high/medium/low/critical)
+    if (severity) {
+        const colorMap = {
+            'high': {
+                color: 'text-red-600',
+                bgColor: 'bg-red-50 dark:bg-red-900/20'
+            },
+            'medium': {
+                color: 'text-amber-600',
+                bgColor: 'bg-amber-50 dark:bg-amber-900/20'
+            },
+            'low': {
+                color: 'text-blue-600',
+                bgColor: 'bg-blue-50 dark:bg-blue-900/20'
+            },
+            'critical': {
+                color: 'text-red-700',
+                bgColor: 'bg-red-100 dark:bg-red-900/30'
+            },
+        };
+        return colorMap[severity] || colorMap['low'];
+    }
+
+    // Old format fallback (type: warning/danger/info)
+    const typeColorMap = {
+        'warning': {
+            color: 'text-amber-600',
+            bgColor: 'bg-amber-50 dark:bg-amber-900/20'
+        },
+        'danger': {
+            color: 'text-red-600',
+            bgColor: 'bg-red-50 dark:bg-red-900/20'
+        },
+        'info': {
+            color: 'text-blue-600',
+            bgColor: 'bg-blue-50 dark:bg-blue-900/20'
+        },
+    };
+    return typeColorMap[type] || typeColorMap['info'];
+};
+
+// Format timestamp
+const formatTime = (timestamp) => {
+    if (!timestamp) return '';
+    const date = new Date(timestamp);
+    const now = new Date();
+    const diffMs = now - date;
+    const diffMins = Math.floor(diffMs / 60000);
+    const diffHours = Math.floor(diffMs / 3600000);
+    const diffDays = Math.floor(diffMs / 86400000);
+
+    if (diffMins < 60) return `${diffMins} mins ago`;
+    if (diffHours < 24) return `${diffHours} hours ago`;
+    if (diffDays < 7) return `${diffDays} days ago`;
+    return date.toLocaleDateString();
+};
 
 const BudgetAlerts = ({ alerts = [], aiForecast = null }) => {
-    const getAlertIcon = (type) => {
-        switch (type) {
-            case 'warning':
-                return AlertTriangle;
-            case 'danger':
-                return AlertCircle;
-            case 'info':
-                return TrendingUp;
-            default:
-                return AlertTriangle;
-        }
-    };
-
-    const getAlertStyle = (type) => {
-        switch (type) {
-            case 'warning':
-                return 'bg-yellow-50 border-yellow-200 text-yellow-800 dark:bg-yellow-900/20 dark:border-yellow-800 dark:text-yellow-300';
-            case 'danger':
-                return 'bg-red-50 border-red-200 text-red-800 dark:bg-red-900/20 dark:border-red-800 dark:text-red-300';
-            case 'info':
-                return 'bg-blue-50 border-blue-200 text-blue-800 dark:bg-blue-900/20 dark:border-blue-800 dark:text-blue-300';
-            default:
-                return 'bg-gray-50 border-gray-200 text-gray-800 dark:bg-gray-900/20 dark:border-gray-800 dark:text-gray-300';
-        }
-    };
-
     const hasAlerts = alerts.length > 0 || aiForecast;
 
     if (!hasAlerts) {
@@ -34,41 +81,48 @@ const BudgetAlerts = ({ alerts = [], aiForecast = null }) => {
     }
 
     return (
-        <div>
-            <div className="rounded-xl sm:rounded-2xl bg-white p-4 sm:p-6 shadow-sm dark:bg-[#1E1E2D] ">
-                <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
-                    Budget Alerts
-                </h3>
+        <div className="rounded-2xl bg-white p-6 shadow-sm dark:bg-[#1E1E2D]">
+            <div className="mb-6 flex items-center gap-2">
+                <Bell className="h-5 w-5 text-indigo-600 dark:text-indigo-400" />
+                <h2 className="text-xl font-bold text-gray-900 dark:text-white">Budget Alerts</h2>
+            </div>
+            <div className="space-y-3">
+                {alerts.map((alert, index) => {
+                    const Icon = alert.icon || getAlertIcon(alert.type);
+                    const colors = getSeverityColors(alert.severity, alert.type);
+                    const color = alert.color || colors.color;
+                    const bgColor = alert.bgColor || colors.bgColor;
+                    const time = alert.time || formatTime(alert.createdAt);
 
-                <div className="space-y-3">
-                    {/* Budget Alerts */}
-                    {alerts.map((alert, index) => {
-                        const Icon = getAlertIcon(alert.type);
-                        return (
-                            <div
-                                key={index}
-                                className={`flex items-start gap-3 rounded-lg border p-4 ${getAlertStyle(alert.type)}`}
-                            >
-                                <Icon className="h-5 w-5 flex-shrink-0 mt-0.5" />
-                                <div className="flex-1">
-                                    <p className="text-sm font-medium">{alert.message}</p>
+                    return (
+                        <div
+                            key={alert._id || alert.id || index}
+                            className={`rounded-xl p-3 transition-all hover:shadow-sm ${bgColor}`}
+                        >
+                            <div className="flex items-start gap-3">
+                                <Icon className={`h-5 w-5 mt-0.5 ${color}`} />
+                                <div className="flex-1 min-w-0">
+                                    <p className="text-sm text-gray-700 dark:text-gray-300">{alert.message}</p>
+                                    {time && <p className="mt-1 text-xs text-gray-500 dark:text-gray-400">{time}</p>}
                                 </div>
                             </div>
-                        );
-                    })}
+                        </div>
+                    );
+                })}
 
-                    {/* AI Forecast Alert */}
-                    {aiForecast && aiForecast.prediction === 'overspend' && (
-                        <div className="flex items-start gap-3 rounded-lg border p-4 bg-indigo-50 border-indigo-200 text-indigo-800 dark:bg-indigo-900/20 dark:border-indigo-800 dark:text-indigo-300">
-                            <TrendingUp className="h-5 w-5 flex-shrink-0 mt-0.5" />
-                            <div className="flex-1">
-                                <p className="text-sm font-medium mb-2">
+                {/* AI Forecast Alert */}
+                {aiForecast && aiForecast.prediction === 'overspend' && (
+                    <div className="rounded-xl p-3 transition-all hover:shadow-sm bg-indigo-50 dark:bg-indigo-900/20">
+                        <div className="flex items-start gap-3">
+                            <TrendingUp className="h-5 w-5 mt-0.5 text-indigo-600" />
+                            <div className="flex-1 min-w-0">
+                                <p className="text-sm text-gray-700 dark:text-gray-300 font-medium">
                                     📈 AI Forecast: {aiForecast.message}
                                 </p>
                                 {aiForecast.recommendations && aiForecast.recommendations.length > 0 && (
                                     <div className="mt-2">
-                                        <p className="text-xs font-semibold mb-1">Recommendations:</p>
-                                        <ul className="text-xs space-y-1">
+                                        <p className="text-xs font-semibold text-gray-600 dark:text-gray-400 mb-1">Recommendations:</p>
+                                        <ul className="text-xs text-gray-600 dark:text-gray-400 space-y-1">
                                             {aiForecast.recommendations.map((rec, idx) => (
                                                 <li key={idx} className="flex items-start gap-1">
                                                     <span>•</span>
@@ -78,16 +132,15 @@ const BudgetAlerts = ({ alerts = [], aiForecast = null }) => {
                                         </ul>
                                     </div>
                                 )}
-                                <p className="text-xs mt-2 opacity-75">
+                                <p className="text-xs mt-2 text-gray-500 dark:text-gray-400">
                                     Confidence: {Math.round(aiForecast.confidence * 100)}%
                                 </p>
                             </div>
                         </div>
-                    )}
-                </div>
+                    </div>
+                )}
             </div>
         </div>
-
     );
 };
 

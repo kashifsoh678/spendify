@@ -1,6 +1,6 @@
-const BudgetProgress = ({ monthlyBudget, totalExpenses }) => {
+const BudgetProgress = ({ monthlyBudget = 0, totalExpenses = 0 }) => {
     const remainingBudget = monthlyBudget - totalExpenses;
-    const budgetUsedPercentage = (totalExpenses / monthlyBudget) * 100;
+    const budgetUsedPercentage = monthlyBudget > 0 ? (totalExpenses / monthlyBudget) * 100 : 0;
 
     const getBudgetStatus = () => {
         if (budgetUsedPercentage < 50) return { color: 'text-green-600', bg: 'bg-green-500', label: 'Healthy' };
@@ -9,6 +9,26 @@ const BudgetProgress = ({ monthlyBudget, totalExpenses }) => {
     };
 
     const budgetStatus = getBudgetStatus();
+
+    // If no budget is set, show a message
+    if (monthlyBudget === 0 || monthlyBudget === null) {
+        return (
+            <div className="rounded-xl sm:rounded-2xl bg-white p-4 sm:p-6 shadow-sm dark:bg-[#1E1E2D]">
+                <h2 className="text-lg sm:text-xl font-bold text-gray-900 dark:text-white mb-3 sm:mb-4">Budget Progress</h2>
+                <div className="text-center py-8">
+                    <p className="text-gray-600 dark:text-gray-400 mb-4">
+                        No monthly budget set yet.
+                    </p>
+                    <a
+                        href="/budget"
+                        className="inline-block px-4 py-2 text-sm font-medium text-white bg-gradient-to-r from-indigo-500 to-indigo-600 rounded-lg hover:from-indigo-600 hover:to-indigo-700 transition-all"
+                    >
+                        Set Your Budget
+                    </a>
+                </div>
+            </div>
+        );
+    }
 
     return (
         <div className="rounded-xl sm:rounded-2xl bg-white p-4 sm:p-6 shadow-sm dark:bg-[#1E1E2D]">

@@ -1,3 +1,5 @@
+import { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import {
   Chart as ChartJS,
   CategoryScale,
@@ -22,7 +24,9 @@ import {
   Home,
   Wallet,
   ShoppingBag,
+  ArrowRight,
 } from 'lucide-react';
+import toast, { Toaster } from 'react-hot-toast';
 
 // Import dashboard components
 import DashboardHeader from '../components/dashboard/DashboardHeader';
@@ -33,6 +37,13 @@ import MonthlyLineChart from '../components/dashboard/MonthlyLineChart';
 import AIInsightsList from '../components/dashboard/AIInsightsList';
 import AlertsList from '../components/dashboard/AlertsList';
 import RecentTransactions from '../components/dashboard/RecentTransactions';
+
+// Import services and context
+import { getDashboardKPIs, getCategorySpending, getSpendingTrend } from '../services/dashboardService';
+import { useTransaction } from '../context/TransactionContext';
+import { getDashboardInsights } from '../services/aiService';
+import { getAlerts } from '../services/alertsService';
+import { getBudget } from '../services/budgetService';
 
 // Register Chart.js components
 ChartJS.register(
@@ -48,19 +59,64 @@ ChartJS.register(
 );
 
 const Dashboard = () => {
+  // Hooks
+  const navigate = useNavigate();
+  const { transactions, fetchTransactions } = useTransaction();
+
+  // State management
+  const [kpiData, setKpiData] = useState(null);
+  const [categoryData, setCategoryData] = useState(null);
+  const [trendData, setTrendData] = useState(null);
+  const [aiInsights, setAiInsights] = useState([]);
+  const [alerts, setAlerts] = useState([]);
+  const [loading, setLoading] = useState(true);
+
   // Get current month
   const currentMonth = new Date().toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
 
-  // Dummy data for KPI cards
-  const kpiData = {
-    totalIncome: 120000,
-    totalExpenses: 78500,
-    monthlyBudget: 100000,
-    upcomingBills: 2
-  };
+  // Fetch dashboard data
+  useEffect(() => {
+    const fetchDashboardData = async () => {
+      try {
+        setLoading(true);
 
-  const remainingBudget = kpiData.monthlyBudget - kpiData.totalExpenses;
-  const budgetUsedPercentage = (kpiData.totalExpenses / kpiData.monthlyBudget) * 100;
+        // Fetch all data in parallel
+        const [kpis, categories, trend, insights, alertsData, budgetData] = await Promise.all([
+          getDashboardKPIs(),
+          getCategorySpending(),
+          getSpendingTrend(),
+          getDashboardInsights().catch(() => ({ insights: [] })), // Fallback to empty if fails
+          getAlerts({ limit: 5 }).catch(() => ({ alerts: [] })), // Fallback to empty if fails
+          getBudget().catch(() => null), // Fetch budget to get real monthlyBudget
+          fetchTransactions({ limit: 5, sort: '-createdAt' }) // Fetch recent transactions
+        ]);
+
+        // If KPI doesn't have monthlyBudget but budget API does, use it
+        if (budgetData && budgetData.budget && (!kpis.monthlyBudget || kpis.monthlyBudget === 0)) {
+          kpis.monthlyBudget = budgetData.budget.monthlyBudget || 0;
+        }
+
+        setKpiData(kpis);
+        setCategoryData(categories);
+        setTrendData(trend);
+        setAiInsights(insights?.insights || []);
+        setAlerts(alertsData?.alerts || []);
+      } catch (error) {
+        console.error('Error fetching dashboard data:', error);
+        toast.error('Failed to load dashboard data');
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchDashboardData();
+  }, [fetchTransactions]);
+
+  // Safe calculations with fallback to 0 to prevent NaN
+  const totalExpenses = kpiData?.totalExpenses || 0;
+  const monthlyBudget = kpiData?.monthlyBudget || 0;
+  const remainingBudget = monthlyBudget - totalExpenses;
+  const budgetUsedPercentage = monthlyBudget > 0 ? (totalExpenses / monthlyBudget) * 100 : 0;
 
   // Budget status color for remaining budget card
   const getBudgetGradient = () => {
@@ -76,166 +132,42 @@ const Dashboard = () => {
   };
 
   // Category-wise spending data for Pie Chart
-  const categorySpendingData = {
-    labels: ['Food', 'Travel', 'Utilities', 'Shopping', 'Education', 'Health', 'Others'],
+  const categorySpendingData = categoryData?.categories ? {
+    labels: categoryData.categories.map(item => item.category),
     datasets: [{
-      data: [26700, 15700, 12000, 10500, 6800, 4300, 2500],
-      backgroundColor: [
-        'rgba(239, 68, 68, 0.8)',
-        'rgba(59, 130, 246, 0.8)',
-        'rgba(16, 185, 129, 0.8)',
-        'rgba(245, 158, 11, 0.8)',
-        'rgba(139, 92, 246, 0.8)',
-        'rgba(236, 72, 153, 0.8)',
-        'rgba(107, 114, 128, 0.8)',
-      ],
-      borderColor: [
-        'rgb(239, 68, 68)',
-        'rgb(59, 130, 246)',
-        'rgb(16, 185, 129)',
-        'rgb(245, 158, 11)',
-        'rgb(139, 92, 246)',
-        'rgb(236, 72, 153)',
-        'rgb(107, 114, 128)',
-      ],
+      data: categoryData.categories.map(item => item.amount),
+      backgroundColor: categoryData.categories.map(item => item.color),
+      borderColor: categoryData.categories.map(item => {
+        // Convert rgba to rgb for border
+        if (item.color.startsWith('rgba')) {
+          return item.color.replace('rgba', 'rgb').replace(/, 0\.\d+\)/, ')');
+        }
+        return item.color;
+      }),
       borderWidth: 2,
     }],
-  };
+  } : null;
 
   // Monthly trend data for Line Chart
-  const monthlyTrendData = {
-    labels: Array.from({ length: 30 }, (_, i) => `Day ${i + 1}`),
+  const monthlyTrendData = trendData?.trend ? {
+    labels: trendData.trend.map(item => `Day ${item.day}`),
     datasets: [{
       label: 'Daily Spending',
-      data: [2100, 2800, 1900, 3200, 2500, 2900, 3100, 2400, 2700, 3500, 2200, 2600, 3000, 2800, 3200, 2100, 2900, 3400, 2500, 2700, 3100, 2300, 2800, 3200, 2600, 2900, 3300, 2400, 2700, 3000],
+      data: trendData.trend.map(item => item.amount),
       borderColor: 'rgb(99, 102, 241)',
       backgroundColor: 'rgba(99, 102, 241, 0.1)',
       fill: true,
       tension: 0.4,
     }],
-  };
+  } : null;
 
-  // AI Insights
-  const aiInsights = [
-    {
-      id: 1,
-      type: 'warning',
-      icon: AlertCircle,
-      title: 'AI Spending Forecast',
-      message: '⚠️ Based on your current trend, you may exceed your monthly budget by 18%.',
-      color: 'text-amber-600',
-      bgColor: 'bg-amber-50 dark:bg-amber-900/20',
-      borderColor: 'border-amber-200 dark:border-amber-800'
-    },
-    {
-      id: 2,
-      type: 'info',
-      icon: Sparkles,
-      title: 'Personality Insight',
-      message: 'You are a Foodie Spender — 34% of your expenses are on Food.',
-      color: 'text-purple-600',
-      bgColor: 'bg-purple-50 dark:bg-purple-900/20',
-      borderColor: 'border-purple-200 dark:border-purple-800'
-    },
-    {
-      id: 3,
-      type: 'success',
-      icon: PiggyBank,
-      title: 'Smart Saving Suggestion',
-      message: 'Reduce your food expenses by 10% to save PKR 2,500 this month.',
-      color: 'text-green-600',
-      bgColor: 'bg-green-50 dark:bg-green-900/20',
-      borderColor: 'border-green-200 dark:border-green-800'
-    }
-  ];
-
-  // Alerts & Notifications
-  const alerts = [
-    {
-      id: 1,
-      type: 'budget',
-      icon: AlertCircle,
-      message: 'You have crossed 78% of your monthly budget.',
-      time: '2 hours ago',
-      color: 'text-red-600',
-      bgColor: 'bg-red-50 dark:bg-red-900/20'
-    },
-    {
-      id: 2,
-      type: 'bill',
-      icon: Calendar,
-      message: 'Electricity Bill due in 3 days.',
-      time: '5 hours ago',
-      color: 'text-orange-600',
-      bgColor: 'bg-orange-50 dark:bg-orange-900/20'
-    },
-    {
-      id: 3,
-      type: 'trend',
-      icon: TrendingUp,
-      message: 'Your spending trend is increasing this week.',
-      time: '1 day ago',
-      color: 'text-blue-600',
-      bgColor: 'bg-blue-50 dark:bg-blue-900/20'
-    }
-  ];
-
-  // Recent Transactions
-  const recentTransactions = [
-    {
-      id: 1,
-      category: 'Food',
-      icon: Utensils,
-      description: 'Grocery Shopping',
-      amount: 3500,
-      type: 'expense',
-      date: '2024-12-04',
-      color: 'text-red-600 bg-red-50 dark:bg-red-900/20'
-    },
-    {
-      id: 2,
-      category: 'Income',
-      icon: Wallet,
-      description: 'Salary Deposit',
-      amount: 120000,
-      type: 'income',
-      date: '2024-12-01',
-      color: 'text-green-600 bg-green-50 dark:bg-green-900/20'
-    },
-    {
-      id: 3,
-      category: 'Travel',
-      icon: Car,
-      description: 'Uber Ride',
-      amount: 850,
-      type: 'expense',
-      date: '2024-12-03',
-      color: 'text-blue-600 bg-blue-50 dark:bg-blue-900/20'
-    },
-    {
-      id: 4,
-      category: 'Shopping',
-      icon: ShoppingBag,
-      description: 'Online Shopping',
-      amount: 4200,
-      type: 'expense',
-      date: '2024-12-02',
-      color: 'text-orange-600 bg-orange-50 dark:bg-orange-900/20'
-    },
-    {
-      id: 5,
-      category: 'Utilities',
-      icon: Home,
-      description: 'Internet Bill',
-      amount: 2500,
-      type: 'expense',
-      date: '2024-12-01',
-      color: 'text-emerald-600 bg-emerald-50 dark:bg-emerald-900/20'
-    }
-  ];
+  // Get first 5 recent transactions from context
+  const recentTransactions = transactions?.slice(0, 5) || [];
 
   return (
     <div className="space-y-6">
+      <Toaster position="top-right" />
+
       {/* Section 1: Header */}
       <DashboardHeader currentMonth={currentMonth} />
 
@@ -243,15 +175,15 @@ const Dashboard = () => {
       <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
         <StatCard
           title="Total Income"
-          value={`PKR ${kpiData.totalIncome.toLocaleString()}`}
+          value={`PKR ${(kpiData?.totalIncome || 0).toLocaleString()}`}
           subtitle="This Month"
           icon={TrendingUp}
-          gradient="from-indigo-500 to-indigo-600"
+          gradient="from-green-500 to-green-600"
           iconBg="bg-white/20"
         />
         <StatCard
           title="Total Expenses"
-          value={`PKR ${kpiData.totalExpenses.toLocaleString()}`}
+          value={`PKR ${totalExpenses.toLocaleString()}`}
           subtitle="This Month"
           icon={TrendingDown}
           gradient="from-red-500 to-red-600"
@@ -267,24 +199,40 @@ const Dashboard = () => {
         />
         <StatCard
           title="Upcoming Bills"
-          value={`${kpiData.upcomingBills} Bills`}
-          subtitle="Due Soon"
-          icon={Calendar}
-          gradient="from-purple-500 to-purple-600"
+          value={`${(kpiData?.upcomingBills || 0)} Bills`}
+          subtitle="Due This Month"
+          icon={AlertCircle}
+          gradient="from-orange-500 to-orange-600"
           iconBg="bg-white/20"
         />
       </div>
 
       {/* Section 3: Budget Progress Indicator */}
       <BudgetProgress
-        percentUsed={budgetUsedPercentage}
-        statusColor={getBudgetLabel().toLowerCase() === 'critical' ? 'red' : getBudgetLabel().toLowerCase() === 'moderate' ? 'yellow' : 'green'}
+        monthlyBudget={monthlyBudget}
+        totalExpenses={totalExpenses}
       />
 
       {/* Section 4: Spending Breakdown Charts */}
       <div className="grid gap-6 lg:grid-cols-2">
-        <CategoryPieChart data={categorySpendingData} />
-        <MonthlyLineChart data={monthlyTrendData} />
+        {categorySpendingData ? (
+          <CategoryPieChart data={categorySpendingData} />
+        ) : (
+          <div className="rounded-xl sm:rounded-2xl bg-white dark:bg-[#1E1E2D] p-6 shadow-sm flex items-center justify-center">
+            <p className="text-gray-500 dark:text-gray-400">
+              {loading ? 'Loading category data...' : 'No category data available'}
+            </p>
+          </div>
+        )}
+        {monthlyTrendData ? (
+          <MonthlyLineChart data={monthlyTrendData} />
+        ) : (
+          <div className="rounded-xl sm:rounded-2xl bg-white dark:bg-[#1E1E2D] p-6 shadow-sm flex items-center justify-center">
+            <p className="text-gray-500 dark:text-gray-400">
+              {loading ? 'Loading trend data...' : 'No trend data available'}
+            </p>
+          </div>
+        )}
       </div>
 
       {/* Section 5 & 6: AI Insights and Alerts */}
@@ -294,7 +242,19 @@ const Dashboard = () => {
       </div>
 
       {/* Section 7: Recent Transactions */}
-      <RecentTransactions transactions={recentTransactions} />
+      <div className="space-y-4">
+        <div className="flex items-center justify-between">
+          <div></div>
+          <button
+            onClick={() => navigate('/transactions')}
+            className="flex items-center gap-2 px-4 py-2 text-sm font-medium text-white bg-gradient-to-r from-indigo-500 to-indigo-600 rounded-lg hover:from-indigo-600 hover:to-indigo-700 transition-all shadow-sm hover:shadow-md"
+          >
+            <span>View All</span>
+            <ArrowRight className="h-4 w-4" />
+          </button>
+        </div>
+        <RecentTransactions transactions={recentTransactions} />
+      </div>
     </div>
   );
 };
