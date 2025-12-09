@@ -347,10 +347,13 @@ export const getMonthlyReport = async (month, params = {}) => {
 
 /**
  * Export monthly report as PDF
+ * Note: Backend exports ALL transactions for the month (no pagination or filters)
+ * @param {string} month - YYYY-MM
  */
 export const getMonthlyReportPDF = async (month) => {
   try {
-    const response = await api.get(`/reports/monthly/pdf?month=${month}`, {
+    const response = await api.get("/reports/monthly/pdf", {
+      params: { month },
       responseType: "blob",
     });
     return response.data;
@@ -366,10 +369,13 @@ export const getMonthlyReportPDF = async (month) => {
 
 /**
  * Export monthly report as CSV
+ * Note: Backend exports ALL transactions for the month (no pagination or filters)
+ * @param {string} month - YYYY-MM
  */
 export const getMonthlyReportCSV = async (month) => {
   try {
-    const response = await api.get(`/reports/monthly/csv?month=${month}`, {
+    const response = await api.get("/reports/monthly/csv", {
+      params: { month },
       responseType: "blob",
     });
     return response.data;
