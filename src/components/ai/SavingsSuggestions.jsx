@@ -1,7 +1,25 @@
 import { Lightbulb, TrendingDown, AlertTriangle, Zap, Leaf } from 'lucide-react';
 
 const SavingsSuggestions = ({ suggestions }) => {
-    if (!suggestions || suggestions.length === 0) return null;
+    if (!suggestions || suggestions.length === 0) {
+        return (
+            <div className="rounded-xl sm:rounded-2xl bg-white dark:bg-[#1E1E2D] p-6 shadow-sm border border-gray-100 dark:border-gray-800">
+                <div className="flex items-center gap-2 mb-4">
+                    <div className="p-2 rounded-full bg-emerald-100 dark:bg-emerald-900/30 text-emerald-600 dark:text-emerald-400">
+                        <Leaf className="h-5 w-5" />
+                    </div>
+                    <div className="flex-1">
+                        <h3 className="text-lg font-bold text-gray-900 dark:text-white">
+                            Smart Saving Suggestions
+                        </h3>
+                    </div>
+                </div>
+                <p className="text-sm text-gray-500 dark:text-gray-400 text-center py-4">
+                    Not enough data for suggestions. <br /> Track more transactions to get personalized tips!
+                </p>
+            </div>
+        );
+    }
 
     // Helper to get icon based on title/reason content
     const getIcon = (item) => {

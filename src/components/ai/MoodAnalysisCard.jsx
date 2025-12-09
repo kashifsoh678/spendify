@@ -57,10 +57,10 @@ const MoodAnalysisCard = ({ moodInsights }) => {
                             <div className="flex items-center gap-3">
                                 <span className="text-2xl">{pattern.mood}</span>
                                 <div>
-                                    <p className="text-sm font-medium text-gray-900 dark:text-white">
+                                    <p className="text-sm font-medium text-gray-900 dark:text-white truncate">
                                         {pattern.label}
                                     </p>
-                                    <p className="text-xs text-gray-500 dark:text-gray-400">
+                                    <p className="text-xs text-gray-500 dark:text-gray-400 truncate">
                                         {pattern.category}
                                     </p>
                                 </div>

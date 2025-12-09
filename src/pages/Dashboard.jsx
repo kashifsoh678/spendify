@@ -277,8 +277,8 @@ const Dashboard = () => {
 
       {/* Section 3: Budget Progress Indicator */}
       <BudgetProgress
-        monthlyBudget={kpiData.monthlyBudget}
-        totalExpenses={kpiData.totalExpenses}
+        percentUsed={budgetUsedPercentage}
+        statusColor={getBudgetLabel().toLowerCase() === 'critical' ? 'red' : getBudgetLabel().toLowerCase() === 'moderate' ? 'yellow' : 'green'}
       />
 
       {/* Section 4: Spending Breakdown Charts */}

@@ -59,11 +59,9 @@ export const BudgetProvider = ({ children }) => {
     const fetchAIForecast = useCallback(async () => {
         if (!user) return;
         try {
-            const response = await apiGetAIForecast();
-            // API returns { success: true, data: { forecast: {...} } }
-            const data = response.data || response;
-            // Only set forecast if it exists (AI might be disabled or no data)
-            setAIForecast(data.forecast || null);
+            const data = await apiGetAIForecast();
+            // Service now returns the forecast object directly
+            setAIForecast(data);
         } catch (err) {
             console.error('Error fetching AI forecast:', err);
             // Don't set error - forecast is optional

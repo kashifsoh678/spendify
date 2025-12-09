@@ -95,13 +95,19 @@ const dummyAIData = {
  * Get AI spending forecast
  * GET /api/ai/forecast
  */
+/**
+ * Get AI spending forecast
+ * GET /api/ai/forecast
+ */
 export const getAIForecast = async () => {
   try {
     const response = await api.get("/ai/forecast");
-    return response.data;
+    return (
+      response.data?.data?.forecast || response.data?.forecast || response.data
+    );
   } catch (error) {
     console.warn("API /ai/forecast failed, using dummy data");
-    return { data: { forecast: dummyAIData.forecast } }; // Return structure matching API response wrapper
+    return dummyAIData.forecast;
   }
 };
 
@@ -112,12 +118,16 @@ export const getAIForecast = async () => {
 export const getPersonality = async () => {
   try {
     const response = await api.get("/ai/personality");
-    // Extract nested data: response.data.data.personality
-    return (
-      response.data?.data?.personality ||
-      response.data?.personality ||
-      response.data
-    );
+    // Check for nested personality object
+    if (response.data?.data?.personality) {
+      return response.data.data.personality;
+    }
+    // Check for direct personality object (flat structure)
+    if (response.data?.personality) {
+      return response.data.personality;
+    }
+    // If neither exists (e.g. empty data object), return null
+    return null;
   } catch (error) {
     console.warn("API /ai/personality failed, using dummy data");
     return dummyAIData.personality;
@@ -131,9 +141,12 @@ export const getPersonality = async () => {
 export const getMoodInsights = async () => {
   try {
     const response = await api.get("/ai/mood-insights");
-    // Extract nested data: response.data.data (response usually has { data: { moodInsights... } } or { data: { ...fields } })
-    // Based on spec: { data: { topMood: ... } }
-    return response.data?.data || response.data;
+    return (
+      response.data?.data?.moodInsights ||
+      response.data?.moodInsights ||
+      response.data?.data ||
+      response.data
+    );
   } catch (error) {
     console.warn("API /ai/mood-insights failed, using dummy data");
     return dummyAIData.moodInsights;
@@ -147,12 +160,11 @@ export const getMoodInsights = async () => {
 export const getSavings = async () => {
   try {
     const response = await api.get("/ai/suggestions");
-    // Extract nested data: response.data.data.suggestions
-    return (
+    const data =
       response.data?.data?.suggestions ||
       response.data?.suggestions ||
-      response.data
-    );
+      response.data;
+    return Array.isArray(data) ? data : [];
   } catch (error) {
     console.warn("API /ai/suggestions failed, using dummy data");
     return dummyAIData.suggestions;
@@ -166,12 +178,11 @@ export const getSavings = async () => {
 export const getChallenges = async () => {
   try {
     const response = await api.get("/ai/challenges");
-    // Extract nested data: response.data.data.challenges
-    return (
+    const data =
       response.data?.data?.challenges ||
       response.data?.challenges ||
-      response.data
-    );
+      response.data;
+    return Array.isArray(data) ? data : [];
   } catch (error) {
     console.warn("API /ai/challenges failed, using dummy data");
     return dummyAIData.challenges;
@@ -193,9 +204,8 @@ export const getAllAIInsights = async () => {
         getChallenges(),
       ]);
 
-    // Handle forecast response structure or null
-    const forecast =
-      forecastData?.data?.forecast || forecastData?.forecast || null;
+    // Handle forecast response structure (it's already unwrapped by getAIForecast)
+    const forecast = forecastData;
 
     return {
       forecast,

@@ -1,7 +1,21 @@
 import { User, TrendingUp } from 'lucide-react';
 
 const PersonalityCard = ({ personality }) => {
-    if (!personality) return null;
+    if (!personality) {
+        return (
+            <div className="rounded-xl sm:rounded-2xl bg-white dark:bg-[#1E1E2D] p-6 shadow-sm border border-gray-100 dark:border-gray-800">
+                <div className="flex items-center gap-2 mb-4">
+                    <User className="h-5 w-5 text-gray-400" />
+                    <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
+                        Spending Personality
+                    </h3>
+                </div>
+                <p className="text-sm text-gray-500 dark:text-gray-400 text-center py-4">
+                    Not enough data to detect personality. <br /> Continue using Spendify to unlock insights!
+                </p>
+            </div>
+        );
+    }
 
     const getPersonalityColor = (type) => {
         switch (type) {
@@ -82,14 +96,14 @@ const PersonalityCard = ({ personality }) => {
                                             {cat.category}
                                         </span>
                                     </div>
-                                    <div className="flex items-center gap-3 w-1/2">
+                                    <div className="flex items-center gap-3 w-32 sm:w-40 md:w-1/2">
                                         <div className="flex-1 h-2 bg-gray-100 dark:bg-gray-700 rounded-full overflow-hidden">
                                             <div
                                                 className="h-full bg-[var(--color-primary)] rounded-full"
                                                 style={{ width: `${cat.percentage}%` }}
                                             />
                                         </div>
-                                        <span className="text-xs font-bold text-gray-600 dark:text-gray-400 w-8 text-right">
+                                        <span className="text-xs font-bold text-gray-600 dark:text-gray-400 w-8 text-right shrink-0">
                                             {cat.percentage}%
                                         </span>
                                     </div>

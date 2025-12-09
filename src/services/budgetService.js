@@ -8,7 +8,7 @@ export const setBudget = async (monthlyBudget) => {
   try {
     const response = await api.post("/budget", { monthlyBudget });
     // API returns { success: true, data: { budget: {...} } }
-    return response.data;
+    return response.data?.data || response.data;
   } catch (error) {
     throw error.response?.data || error.message;
   }
@@ -22,7 +22,7 @@ export const getBudget = async () => {
   try {
     const response = await api.get("/budget");
     // API returns { success: true, data: { budget: {...} } }
-    return response.data;
+    return response.data?.data || response.data;
   } catch (error) {
     throw error.response?.data || error.message;
   }
@@ -36,7 +36,7 @@ export const getBudgetStatus = async () => {
   try {
     const response = await api.get("/budget/status");
     // API returns { success: true, data: { alert, statusColor, budget: {...} } }
-    return response.data;
+    return response.data?.data || response.data;
   } catch (error) {
     throw error.response?.data || error.message;
   }

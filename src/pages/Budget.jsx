@@ -4,7 +4,7 @@ import BudgetForm from '../components/budget/BudgetForm';
 import BudgetSummary from '../components/budget/BudgetSummary';
 import BudgetProgress from '../components/budget/BudgetProgress';
 import BudgetAlerts from '../components/budget/BudgetAlerts';
-import AIForecastCard from '../components/budget/AIForecastCard';
+import ForecastCard from '../components/ai/ForecastCard';
 import { useBudget } from '../context/BudgetContext';
 
 const Budget = () => {
@@ -45,7 +45,7 @@ const Budget = () => {
             {/* Main Grid Layout - 2 columns (50% each) on desktop */}
             <div className="grid gap-6 lg:grid-cols-2">
                 {/* Left Column - Budget Form & Progress stacked */}
-                <div className="space-y-6">
+                <div className="space-y-6 ">
                     <BudgetForm
                         currentBudget={budget?.monthlyBudget}
                         onSave={handleSaveBudget}
@@ -62,13 +62,16 @@ const Budget = () => {
 
 
                 {/* Right Column - Budget Alerts */}
-                <BudgetAlerts
-                    alerts={alerts && alerts.length > 0 ? alerts : (budgetStatus?.alerts || [])}
-                    aiForecast={null}
-                />
+                <div className=" space-y-6">
+                    <BudgetAlerts
+                        alerts={alerts && alerts.length > 0 ? alerts : (budgetStatus?.alerts || [])}
+                        aiForecast={null}
+                    />
+                    {/* AI Forecast Card - Full Width */}
+                    {aiForecast && <ForecastCard forecast={aiForecast} />}
+                </div>
 
-                {/* AI Forecast Card - Full Width */}
-                {aiForecast && <AIForecastCard forecast={aiForecast} />}
+
 
             </div>
 
