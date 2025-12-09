@@ -73,21 +73,20 @@ export const uploadAvatar = async (file) => {
       headers: { "Content-Type": "multipart/form-data" },
     });
 
-    // Handle response structure: { data: { avatar: "/uploads/..." } }
-    let avatarUrl =
+    // ImageKit.io returns full URL: https://ik.imagekit.io/alt5i0gkh/avatars/...
+    // Response structure: { statusCode: 200, data: { avatar: "https://..." }, success: true }
+    const avatarUrl =
       response.data?.data?.avatar ||
       response.data?.avatar ||
       response.data?.url;
 
-    // If it's a relative path (starts with /), prepend the API base URL
-    if (avatarUrl && avatarUrl.startsWith("/")) {
-      const baseURL = api.defaults.baseURL || "http://localhost:5001/api";
-      const origin = baseURL.replace("/api", ""); // remove /api to get root
-      avatarUrl = `${origin}${avatarUrl}`;
+    if (!avatarUrl) {
+      throw new Error("No avatar URL returned from server");
     }
 
     return avatarUrl;
   } catch (error) {
+    console.error("Avatar upload error:", error);
     throw error; // Propagate error
   }
 };

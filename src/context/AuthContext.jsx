@@ -22,9 +22,9 @@ export const AuthProvider = ({ children }) => {
         try {
           // Verify token and get user data
           const response = await api.get('/auth/me');
-          // Handle potential 'data' wrapper
-          const responseData = response.data.data || response.data;
-          setUser(responseData.user || responseData);
+          // New response structure: { statusCode: 200, data: { _id, name, email, avatar, settings, categories }, success: true }
+          const userData = response.data.data || response.data;
+          setUser(userData);
         } catch (err) {
           console.error('Token verification failed:', err);
           localStorage.removeItem('token');
@@ -43,9 +43,11 @@ export const AuthProvider = ({ children }) => {
       setError(null);
       const response = await api.post('/auth/login', { email, password });
 
-      // Handle potential 'data' wrapper from standard API response
+      // New response structure: { statusCode: 200, data: { _id, name, email, avatar, settings, categories, token }, success: true }
       const responseData = response.data.data || response.data;
-      const { token: authToken, user: userData } = responseData;
+
+      // Extract token and user data (exclude token from user object)
+      const { token: authToken, ...userData } = responseData;
 
       if (!authToken) {
         throw new Error('Token missing in response');
@@ -55,6 +57,8 @@ export const AuthProvider = ({ children }) => {
       localStorage.setItem('token', authToken);
       setToken(authToken);
       setUser(userData);
+
+      console.log('Login successful - User data:', userData); // Debug log
 
       return { success: true };
     } catch (err) {
@@ -70,9 +74,11 @@ export const AuthProvider = ({ children }) => {
       setError(null);
       const response = await api.post('/auth/register', { name, email, password });
 
-      // Handle potential 'data' wrapper
+      // New response structure: { statusCode: 200, data: { _id, name, email, avatar, settings, categories, token }, success: true }
       const responseData = response.data.data || response.data;
-      const { token: authToken, user: userData } = responseData;
+
+      // Extract token and user data (exclude token from user object)
+      const { token: authToken, ...userData } = responseData;
 
       if (!authToken) {
         throw new Error('Token missing in response');
@@ -82,6 +88,8 @@ export const AuthProvider = ({ children }) => {
       localStorage.setItem('token', authToken);
       setToken(authToken);
       setUser(userData);
+
+      console.log('Registration successful - User data:', userData); // Debug log
 
       return { success: true };
     } catch (err) {
