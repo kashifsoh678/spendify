@@ -67,8 +67,8 @@ const Budget = () => {
                     aiForecast={null}
                 />
 
-                {/* AI Forecast Card - Full Width
-                {aiForecast && <AIForecastCard forecast={aiForecast} />} */}
+                {/* AI Forecast Card - Full Width */}
+                {aiForecast && <AIForecastCard forecast={aiForecast} />}
 
             </div>
 

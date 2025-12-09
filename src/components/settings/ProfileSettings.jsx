@@ -80,7 +80,7 @@ const ProfileSettings = () => {
         }
 
         try {
-            await changePassword({ current: data.currentPassword, new: data.newPassword });
+            await changePassword({ currentPassword: data.currentPassword, newPassword: data.newPassword });
             toast.success('Password changed successfully');
             reset();
         } catch (error) {
@@ -152,8 +152,8 @@ const ProfileSettings = () => {
                                 <input
                                     type="email"
                                     value={profile.email}
-                                    onChange={(e) => setProfile({ ...profile, email: e.target.value })}
-                                    className="w-full pl-10 pr-4 py-2 rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:ring-2 focus:ring-[var(--color-primary)] focus:border-transparent"
+                                    disabled
+                                    className="w-full pl-10 pr-4 py-2 rounded-lg border border-gray-200 dark:border-gray-700 bg-gray-100 dark:bg-gray-900 text-gray-500 dark:text-gray-500 cursor-not-allowed focus:ring-0 focus:border-gray-200 dark:focus:border-gray-700"
                                     placeholder="john@example.com"
                                 />
                             </div>

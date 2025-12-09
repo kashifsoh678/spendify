@@ -2,12 +2,17 @@ import { useState, useEffect } from 'react';
 import { Plus, Trash2, Tag } from 'lucide-react';
 import toast from 'react-hot-toast';
 import { getCategories, addCategory, deleteCategory } from '../../services/settingsService';
+import { ConfirmationModal } from '../common';
 
 const CategorySettings = () => {
     const [categories, setCategories] = useState([]);
     const [newCategory, setNewCategory] = useState('');
     const [loading, setLoading] = useState(true);
     const [adding, setAdding] = useState(false);
+
+    // Delete Modal State
+    const [isConfirmOpen, setIsConfirmOpen] = useState(false);
+    const [categoryToDelete, setCategoryToDelete] = useState(null);
 
     useEffect(() => {
         loadCategories();
@@ -41,15 +46,23 @@ const CategorySettings = () => {
         }
     };
 
-    const handleDeleteCategory = async (id) => {
-        if (!window.confirm('Are you sure you want to delete this category?')) return;
+    const handleDeleteClick = (id) => {
+        setCategoryToDelete(id);
+        setIsConfirmOpen(true);
+    };
+
+    const confirmDelete = async () => {
+        if (!categoryToDelete) return;
 
         try {
-            await deleteCategory(id);
-            setCategories(categories.filter(c => c.id !== id));
+            await deleteCategory(categoryToDelete);
+            setCategories(categories.filter(c => c.id !== categoryToDelete));
             toast.success('Category deleted successfully');
         } catch (error) {
             toast.error('Failed to delete category');
+        } finally {
+            setIsConfirmOpen(false);
+            setCategoryToDelete(null);
         }
     };
 
@@ -96,9 +109,9 @@ const CategorySettings = () => {
                             )}
                         </div>
 
-                        {category.type === 'custom' && (
+                        {(category.isCustom || category.type === 'custom') && (
                             <button
-                                onClick={() => handleDeleteCategory(category.id)}
+                                onClick={() => handleDeleteClick(category.id)}
                                 className="p-1.5 text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg transition-colors"
                                 title="Delete category"
                             >
@@ -108,6 +121,17 @@ const CategorySettings = () => {
                     </div>
                 ))}
             </div>
+
+            <ConfirmationModal
+                isOpen={isConfirmOpen}
+                onClose={() => setIsConfirmOpen(false)}
+                onConfirm={confirmDelete}
+                title="Delete Category"
+                message="Are you sure you want to delete this category? This action cannot be undone."
+                confirmText="Delete"
+                cancelText="Cancel"
+                variant="danger"
+            />
         </div>
     );
 };

@@ -226,3 +226,71 @@ const transactions = await dashboardService.getMonthlyTransactions("2024-12");
 const budget = await dashboardService.getBudgetStatus();
 const bills = await dashboardService.getUpcomingBills();
 ```
+
+---
+
+### 11. Settings Module
+
+#### Profile Management
+
+**Update Profile**
+`PUT /api/users/profile`
+
+- Headers: `Authorization: Bearer <token>`
+- Body: `{ "name": "Talha Updated", "email": "newemail@example.com" }`
+
+**Change Password**
+`PUT /api/users/change-password`
+
+- Body: `{ "currentPassword": "password123", "newPassword": "newpassword456" }`
+
+#### Avatars
+
+**Get Available Avatars**
+`GET /api/users/avatars`
+
+- Returns: List of DiceBear URLs.
+
+**Set Avatar**
+`POST /api/users/avatar`
+
+- Body: `{ "avatarUrl": "https://api.dicebear.com/..." }`
+
+#### Notification Settings
+
+**Get Preferences**
+`GET /api/settings/notifications`
+
+- Response: `{ "email": true, "bills": true, "budget": true, "weeklyReports": true }`
+
+**Update Preferences**
+`PUT /api/settings/notifications`
+
+- Body: `{ "email": false, "bills": true }`
+
+#### AI Preferences
+
+**Get AI Settings**
+`GET /api/settings/ai`
+
+- Response: `{ "forecast": true, "riskTolerance": "medium" }`
+
+**Update AI Settings**
+`PUT /api/settings/ai`
+
+- Body: `{ "riskTolerance": "high", "personality": false }`
+
+#### Custom Categories
+
+**Get All Categories**
+`GET /api/categories`
+
+- Returns: `{ "categories": [ { "id": "1", "name": "Food", "isCustom": false }, ... ] }`
+
+**Add Custom Category**
+`POST /api/categories`
+
+- Body: `{ "name": "Crypto", "type": "expense", "color": "#FFA500", "icon": "🪙" }`
+
+**Delete Custom Category**
+`DELETE /api/categories/:id`
