@@ -27,6 +27,24 @@ const getCategoryIcon = (category) => {
 };
 
 const RecentTransactions = ({ transactions }) => {
+    // Check if there are no transactions
+    if (!transactions || transactions.length === 0) {
+        return (
+            <div className="rounded-2xl bg-white p-4 sm:p-6 shadow-sm dark:bg-[#1E1E2D]">
+                <h2 className="text-lg sm:text-xl font-bold text-gray-900 dark:text-white mb-4 sm:mb-6">Recent Transactions</h2>
+                <div className="text-center py-12">
+                    <Wallet className="h-16 w-16 text-gray-300 dark:text-gray-600 mx-auto mb-4" />
+                    <p className="text-gray-500 dark:text-gray-400 text-sm mb-2">
+                        No transactions yet
+                    </p>
+                    <p className="text-gray-400 dark:text-gray-500 text-xs">
+                        Start tracking your income and expenses
+                    </p>
+                </div>
+            </div>
+        );
+    }
+
     return (
         <div className="rounded-2xl bg-white p-4 sm:p-6 shadow-sm dark:bg-[#1E1E2D]">
             <h2 className="text-lg sm:text-xl font-bold text-gray-900 dark:text-white mb-4 sm:mb-6">Recent Transactions</h2>

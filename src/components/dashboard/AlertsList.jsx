@@ -57,30 +57,42 @@ const AlertsList = ({ alerts }) => {
                 <Bell className="h-5 w-5 text-indigo-600 dark:text-indigo-400" />
                 <h2 className="text-xl font-bold text-gray-900 dark:text-white">Alerts</h2>
             </div>
-            <div className="space-y-3">
-                {alerts.map((alert) => {
-                    const Icon = alert.icon || getAlertIcon(alert.type);
-                    const colors = getSeverityColors(alert.severity);
-                    const color = alert.color || colors.color;
-                    const bgColor = alert.bgColor || colors.bgColor;
-                    const time = alert.time || formatTime(alert.createdAt);
+            {alerts && alerts.length > 0 ? (
+                <div className="space-y-3">
+                    {alerts.map((alert, index) => {
+                        const Icon = alert.icon || getAlertIcon(alert.type);
+                        const colors = getSeverityColors(alert.severity, alert.type);
+                        const color = alert.color || colors.color;
+                        const bgColor = alert.bgColor || colors.bgColor;
+                        const time = alert.time || formatTime(alert.createdAt);
 
-                    return (
-                        <div
-                            key={alert._id || alert.id}
-                            className={`rounded-xl p-3 transition-all hover:shadow-sm ${bgColor}`}
-                        >
-                            <div className="flex items-start gap-3">
-                                <Icon className={`h-5 w-5 mt-0.5 ${color}`} />
-                                <div className="flex-1 min-w-0">
-                                    <p className="text-sm text-gray-700 dark:text-gray-300">{alert.message}</p>
-                                    <p className="mt-1 text-xs text-gray-500 dark:text-gray-400">{time}</p>
+                        return (
+                            <div
+                                key={alert._id || alert.id || index}
+                                className={`rounded-xl p-3 transition-all hover:shadow-sm ${bgColor}`}
+                            >
+                                <div className="flex items-start gap-3">
+                                    <Icon className={`h-5 w-5 mt-0.5 ${color}`} />
+                                    <div className="flex-1 min-w-0">
+                                        <p className="text-sm text-gray-700 dark:text-gray-300">{alert.message}</p>
+                                        {time && <p className="mt-1 text-xs text-gray-500 dark:text-gray-400">{time}</p>}
+                                    </div>
                                 </div>
                             </div>
-                        </div>
-                    );
-                })}
-            </div>
+                        );
+                    })}
+                </div>
+            ) : (
+                <div className="text-center py-8">
+                    <Bell className="h-12 w-12 text-gray-300 dark:text-gray-600 mx-auto mb-3" />
+                    <p className="text-gray-500 dark:text-gray-400 text-sm">
+                        No alerts at the moment
+                    </p>
+                    <p className="text-gray-400 dark:text-gray-500 text-xs mt-2">
+                        You'll see budget and bill alerts here
+                    </p>
+                </div>
+            )}
         </div>
     );
 };
