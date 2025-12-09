@@ -1,22 +1,29 @@
-import api from '../api/api';
+import api from "../api/api";
 
 // Helper to generate month options
 export const getMonthOptions = () => {
   const months = [];
   const currentDate = new Date();
-  
+
   for (let i = 0; i < 12; i++) {
-    const date = new Date(currentDate.getFullYear(), currentDate.getMonth() - i, 1);
+    const date = new Date(
+      currentDate.getFullYear(),
+      currentDate.getMonth() - i,
+      1
+    );
     const year = date.getFullYear();
-    const month = String(date.getMonth() + 1).padStart(2, '0');
-    const monthName = date.toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
-    
+    const month = String(date.getMonth() + 1).padStart(2, "0");
+    const monthName = date.toLocaleDateString("en-US", {
+      month: "long",
+      year: "numeric",
+    });
+
     months.push({
       value: `${year}-${month}`,
-      label: monthName
+      label: monthName,
     });
   }
-  
+
   return months;
 };
 
@@ -28,19 +35,69 @@ const generateDummyReport = (month) => {
       income: 120000,
       expenses: 78100,
       savings: 41900,
-      topCategory: "Food & Dining"
+      topCategory: "Food & Dining",
     },
     categoryBreakdown: [
-      { category: "Food & Dining", amount: 20000, percent: 26, color: 'rgba(239, 68, 68, 0.8)' },
-      { category: "Travel", amount: 12000, percent: 15, color: 'rgba(59, 130, 246, 0.8)' },
-      { category: "Utilities", amount: 9000, percent: 11, color: 'rgba(16, 185, 129, 0.8)' },
-      { category: "Shopping", amount: 8500, percent: 11, color: 'rgba(245, 158, 11, 0.8)' },
-      { category: "Entertainment", amount: 7200, percent: 9, color: 'rgba(139, 92, 246, 0.8)' },
-      { category: "Healthcare", amount: 6400, percent: 8, color: 'rgba(236, 72, 153, 0.8)' },
-      { category: "Education", amount: 5000, percent: 6, color: 'rgba(107, 114, 128, 0.8)' },
-      { category: "Transportation", amount: 4500, percent: 6, color: 'rgba(239, 68, 68, 0.8)' },
-      { category: "Bills", amount: 3500, percent: 4, color: 'rgba(59, 130, 246, 0.8)' },
-      { category: "Others", amount: 2000, percent: 3, color: 'rgba(16, 185, 129, 0.8)' }
+      {
+        category: "Food & Dining",
+        amount: 20000,
+        percent: 26,
+        color: "rgba(239, 68, 68, 0.8)",
+      },
+      {
+        category: "Travel",
+        amount: 12000,
+        percent: 15,
+        color: "rgba(59, 130, 246, 0.8)",
+      },
+      {
+        category: "Utilities",
+        amount: 9000,
+        percent: 11,
+        color: "rgba(16, 185, 129, 0.8)",
+      },
+      {
+        category: "Shopping",
+        amount: 8500,
+        percent: 11,
+        color: "rgba(245, 158, 11, 0.8)",
+      },
+      {
+        category: "Entertainment",
+        amount: 7200,
+        percent: 9,
+        color: "rgba(139, 92, 246, 0.8)",
+      },
+      {
+        category: "Healthcare",
+        amount: 6400,
+        percent: 8,
+        color: "rgba(236, 72, 153, 0.8)",
+      },
+      {
+        category: "Education",
+        amount: 5000,
+        percent: 6,
+        color: "rgba(107, 114, 128, 0.8)",
+      },
+      {
+        category: "Transportation",
+        amount: 4500,
+        percent: 6,
+        color: "rgba(239, 68, 68, 0.8)",
+      },
+      {
+        category: "Bills",
+        amount: 3500,
+        percent: 4,
+        color: "rgba(59, 130, 246, 0.8)",
+      },
+      {
+        category: "Others",
+        amount: 2000,
+        percent: 3,
+        color: "rgba(16, 185, 129, 0.8)",
+      },
     ],
     trend: [
       { date: "2024-12-01", amount: 1300 },
@@ -72,7 +129,7 @@ const generateDummyReport = (month) => {
       { date: "2024-12-27", amount: 2900 },
       { date: "2024-12-28", amount: 2400 },
       { date: "2024-12-29", amount: 1800 },
-      { date: "2024-12-30", amount: 2100 }
+      { date: "2024-12-30", amount: 2100 },
     ],
     transactions: [
       {
@@ -81,7 +138,7 @@ const generateDummyReport = (month) => {
         category: "Food & Dining",
         amount: 500,
         type: "expense",
-        note: "Lunch at restaurant"
+        note: "Lunch at restaurant",
       },
       {
         id: 2,
@@ -89,7 +146,7 @@ const generateDummyReport = (month) => {
         category: "Travel",
         amount: 800,
         type: "expense",
-        note: "Uber ride"
+        note: "Uber ride",
       },
       {
         id: 3,
@@ -97,7 +154,7 @@ const generateDummyReport = (month) => {
         category: "Shopping",
         amount: 1200,
         type: "expense",
-        note: "Clothing"
+        note: "Clothing",
       },
       {
         id: 4,
@@ -105,7 +162,7 @@ const generateDummyReport = (month) => {
         category: "Salary",
         amount: 50000,
         type: "income",
-        note: "Monthly salary"
+        note: "Monthly salary",
       },
       {
         id: 5,
@@ -113,7 +170,7 @@ const generateDummyReport = (month) => {
         category: "Food & Dining",
         amount: 350,
         type: "expense",
-        note: "Grocery shopping"
+        note: "Grocery shopping",
       },
       {
         id: 6,
@@ -121,7 +178,7 @@ const generateDummyReport = (month) => {
         category: "Entertainment",
         amount: 600,
         type: "expense",
-        note: "Movie tickets"
+        note: "Movie tickets",
       },
       {
         id: 7,
@@ -129,7 +186,7 @@ const generateDummyReport = (month) => {
         category: "Utilities",
         amount: 2500,
         type: "expense",
-        note: "Electricity bill"
+        note: "Electricity bill",
       },
       {
         id: 8,
@@ -137,7 +194,7 @@ const generateDummyReport = (month) => {
         category: "Food & Dining",
         amount: 450,
         type: "expense",
-        note: "Dinner"
+        note: "Dinner",
       },
       {
         id: 9,
@@ -145,7 +202,7 @@ const generateDummyReport = (month) => {
         category: "Transportation",
         amount: 1200,
         type: "expense",
-        note: "Fuel"
+        note: "Fuel",
       },
       {
         id: 10,
@@ -153,7 +210,7 @@ const generateDummyReport = (month) => {
         category: "Healthcare",
         amount: 1500,
         type: "expense",
-        note: "Doctor visit"
+        note: "Doctor visit",
       },
       {
         id: 11,
@@ -161,7 +218,7 @@ const generateDummyReport = (month) => {
         category: "Food & Dining",
         amount: 700,
         type: "expense",
-        note: "Food delivery"
+        note: "Food delivery",
       },
       {
         id: 12,
@@ -169,7 +226,7 @@ const generateDummyReport = (month) => {
         category: "Education",
         amount: 3000,
         type: "expense",
-        note: "Online course"
+        note: "Online course",
       },
       {
         id: 13,
@@ -177,7 +234,7 @@ const generateDummyReport = (month) => {
         category: "Shopping",
         amount: 2200,
         type: "expense",
-        note: "Electronics"
+        note: "Electronics",
       },
       {
         id: 14,
@@ -185,7 +242,7 @@ const generateDummyReport = (month) => {
         category: "Food & Dining",
         amount: 400,
         type: "expense",
-        note: "Breakfast"
+        note: "Breakfast",
       },
       {
         id: 15,
@@ -193,23 +250,98 @@ const generateDummyReport = (month) => {
         category: "Entertainment",
         amount: 800,
         type: "expense",
-        note: "Concert tickets"
-      }
-    ]
+        note: "Concert tickets",
+      },
+    ],
   };
 };
 
+// Chart colors for fallback
+const CHART_COLORS = [
+  "#10B981",
+  "#3B82F6",
+  "#F59E0B",
+  "#EF4444",
+  "#8B5CF6",
+  "#EC4899",
+  "#6366F1",
+  "#14B8A6",
+  "#F97316",
+  "#06B6D4",
+];
+
 /**
  * Get monthly report data
+ * @param {string} month - YYYY-MM
+ * @param {Object} params - Filters like { page, limit, type, search, category, startDate, endDate }
  */
-export const getMonthlyReport = async (month) => {
+export const getMonthlyReport = async (month, params = {}) => {
   try {
-    const response = await api.get(`/reports/monthly?month=${month}`);
-    return response.data;
+    // 1. Prepare query parameters
+    const queryParams = {
+      month,
+      ...Object.fromEntries(
+        Object.entries(params).filter(
+          ([_, v]) => v != null && v !== "" && v !== "all"
+        )
+      ),
+    };
+
+    const response = await api.get("/reports/monthly", { params: queryParams });
+    const data = response.data?.data || response.data;
+
+    // 2. Map API response to UI expected format
+    if (data) {
+      return {
+        ...data,
+        summary: {
+          income: data.summary?.totalIncome || 0,
+          expenses: data.summary?.totalExpenses || 0,
+          savings: data.summary?.savings || 0,
+          topCategory:
+            data.summary?.topCategory?.category ||
+            data.categoryBreakdown?.[0]?.category ||
+            "N/A",
+        },
+        categoryBreakdown:
+          data.categoryBreakdown?.map((cat, index) => ({
+            ...cat,
+            percent: cat.percentage, // Map percentage to percent
+            color: cat.color || CHART_COLORS[index % CHART_COLORS.length], // Fallback color
+          })) || [],
+        trend:
+          data.trend?.map((item) => ({
+            date: `${month}-${String(item.day).padStart(2, "0")}`, // Construct full date
+            amount: item.amount,
+          })) || [],
+
+        // Ensure transactions and pagination are passed through
+        transactions: data.transactions || [],
+        pagination: data.pagination
+          ? {
+              page: data.pagination.page || Number(params.page) || 1,
+              limit: data.pagination.limit || Number(params.limit) || 10,
+              totalPages:
+                data.pagination.totalPages ||
+                (data.pagination.total
+                  ? Math.ceil(
+                      data.pagination.total /
+                        (data.pagination.limit || params.limit || 10)
+                    )
+                  : 1),
+              total: data.pagination.total || 0,
+            }
+          : {
+              page: Number(params.page) || 1,
+              limit: Number(params.limit) || 10,
+              totalPages: 1,
+              total: 0,
+            },
+      };
+    }
+    return data;
   } catch (error) {
-    console.warn('Backend not available, using dummy report data');
-    await new Promise(resolve => setTimeout(resolve, 500));
-    return generateDummyReport(month);
+    throw error.response?.data || error.message;
   }
 };
 
@@ -219,16 +351,16 @@ export const getMonthlyReport = async (month) => {
 export const getMonthlyReportPDF = async (month) => {
   try {
     const response = await api.get(`/reports/monthly/pdf?month=${month}`, {
-      responseType: 'blob'
+      responseType: "blob",
     });
     return response.data;
   } catch (error) {
-    console.warn('Backend not available, simulating PDF export');
-    await new Promise(resolve => setTimeout(resolve, 1000));
-    
+    console.warn("Backend not available, simulating PDF export");
+    await new Promise((resolve) => setTimeout(resolve, 1000));
+
     // Create a simple text blob as placeholder
     const content = `Monthly Report - ${month}\n\nThis is a placeholder PDF.\nIn production, the backend will generate a proper PDF file.`;
-    return new Blob([content], { type: 'application/pdf' });
+    return new Blob([content], { type: "application/pdf" });
   }
 };
 
@@ -238,31 +370,31 @@ export const getMonthlyReportPDF = async (month) => {
 export const getMonthlyReportCSV = async (month) => {
   try {
     const response = await api.get(`/reports/monthly/csv?month=${month}`, {
-      responseType: 'blob'
+      responseType: "blob",
     });
     return response.data;
   } catch (error) {
-    console.warn('Backend not available, generating CSV from dummy data');
-    await new Promise(resolve => setTimeout(resolve, 500));
-    
+    console.warn("Backend not available, generating CSV from dummy data");
+    await new Promise((resolve) => setTimeout(resolve, 500));
+
     const report = generateDummyReport(month);
-    
+
     // Generate CSV content
-    const headers = ['Date', 'Category', 'Type', 'Note', 'Amount'];
-    const rows = report.transactions.map(t => [
+    const headers = ["Date", "Category", "Type", "Note", "Amount"];
+    const rows = report.transactions.map((t) => [
       t.date,
       t.category,
       t.type,
       t.note,
-      t.amount
+      t.amount,
     ]);
-    
+
     const csvContent = [
-      headers.join(','),
-      ...rows.map(row => row.join(','))
-    ].join('\n');
-    
-    return new Blob([csvContent], { type: 'text/csv' });
+      headers.join(","),
+      ...rows.map((row) => row.join(",")),
+    ].join("\n");
+
+    return new Blob([csvContent], { type: "text/csv" });
   }
 };
 
@@ -271,7 +403,7 @@ export const getMonthlyReportCSV = async (month) => {
  */
 export const downloadFile = (blob, filename) => {
   const url = window.URL.createObjectURL(blob);
-  const link = document.createElement('a');
+  const link = document.createElement("a");
   link.href = url;
   link.download = filename;
   document.body.appendChild(link);
@@ -285,5 +417,5 @@ export default {
   getMonthlyReport,
   getMonthlyReportPDF,
   getMonthlyReportCSV,
-  downloadFile
+  downloadFile,
 };

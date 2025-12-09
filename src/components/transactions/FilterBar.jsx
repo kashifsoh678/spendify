@@ -13,9 +13,14 @@ const FilterBar = ({ filters, onFilterChange, onClearFilters }) => {
         { value: TRANSACTION_TYPES.EXPENSE, label: 'Expense' }
     ];
 
+    // Deduplicate categories by value
+    const uniqueCategories = Array.from(
+        new Map(allCategories.map(item => [item.value, item])).values()
+    );
+
     const categoryOptions = [
         { value: 'all', label: 'All Categories' },
-        ...allCategories.map(cat => ({
+        ...uniqueCategories.map(cat => ({
             value: cat.value,
             label: cat.label,
             icon: cat.icon

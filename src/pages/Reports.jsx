@@ -23,6 +23,7 @@ const Reports = () => {
 
     // Filter and Pagination state
     const [currentPage, setCurrentPage] = useState(1);
+    const [itemsPerPage] = useState(10);
     const [filters, setFilters] = useState({
         search: '',
         type: 'all',
@@ -31,23 +32,30 @@ const Reports = () => {
         endDate: ''
     });
 
-    // Fetch report data when month changes
+    // Fetch report data when params change
     useEffect(() => {
         if (!selectedMonth) return;
 
-        const fetchReport = async () => {
-            try {
-                const data = await getMonthlyReport(selectedMonth);
-                setReportData(data);
-                setCurrentPage(1); // Reset page on month change
-            } catch (error) {
-                console.error('Error fetching report:', error);
-                toast.error('Failed to load report');
-            }
-        };
+        const debounceTimer = setTimeout(() => {
+            const fetchReport = async () => {
+                try {
+                    const data = await getMonthlyReport(selectedMonth, {
+                        page: currentPage,
+                        limit: itemsPerPage,
+                        ...filters
+                    });
+                    setReportData(data);
+                } catch (error) {
+                    console.error('Error fetching report:', error);
+                    toast.error('Failed to load report');
+                }
+            };
 
-        fetchReport();
-    }, [selectedMonth]);
+            fetchReport();
+        }, 500);
+
+        return () => clearTimeout(debounceTimer);
+    }, [selectedMonth, currentPage, filters, itemsPerPage]);
 
     // Handle filter changes
     const handleFilterChange = (newFilters) => {
@@ -66,48 +74,6 @@ const Reports = () => {
         });
         setCurrentPage(1);
     };
-
-    // Filter and Paginate Transactions
-    const { paginatedTransactions, totalPages } = useMemo(() => {
-        if (!reportData?.transactions) return { paginatedTransactions: [], totalPages: 1 };
-
-        let filtered = [...reportData.transactions];
-
-        // Apply Search
-        if (filters.search) {
-            const searchLower = filters.search.toLowerCase();
-            filtered = filtered.filter(t =>
-                t.note?.toLowerCase().includes(searchLower) ||
-                t.category?.toLowerCase().includes(searchLower)
-            );
-        }
-
-        // Apply Type Filter
-        if (filters.type !== 'all') {
-            filtered = filtered.filter(t => t.type === filters.type);
-        }
-
-        // Apply Category Filter
-        if (filters.category !== 'all') {
-            filtered = filtered.filter(t => t.category === filters.category);
-        }
-
-        // Apply Date Range
-        if (filters.startDate) {
-            filtered = filtered.filter(t => new Date(t.date) >= new Date(filters.startDate));
-        }
-        if (filters.endDate) {
-            filtered = filtered.filter(t => new Date(t.date) <= new Date(filters.endDate));
-        }
-
-        // Pagination
-        const itemsPerPage = 10;
-        const totalPages = Math.ceil(filtered.length / itemsPerPage) || 1;
-        const startIndex = (currentPage - 1) * itemsPerPage;
-        const paginatedTransactions = filtered.slice(startIndex, startIndex + itemsPerPage);
-
-        return { paginatedTransactions, totalPages };
-    }, [reportData, filters, currentPage]);
 
     // Transform data for Category Pie Chart
     const getCategoryChartData = () => {
@@ -223,7 +189,7 @@ const Reports = () => {
 
                             {/* Reused Transaction Table with readOnly prop */}
                             <TransactionTable
-                                transactions={paginatedTransactions}
+                                transactions={reportData.transactions || []}
                                 readOnly={true}
                             />
                         </div>
@@ -231,7 +197,7 @@ const Reports = () => {
                         {/* Pagination */}
                         <Pagination
                             currentPage={currentPage}
-                            totalPages={totalPages}
+                            totalPages={reportData?.pagination?.totalPages || 1}
                             onPageChange={setCurrentPage}
                         />
                     </div>
