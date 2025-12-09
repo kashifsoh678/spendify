@@ -4,10 +4,11 @@ import BudgetForm from '../components/budget/BudgetForm';
 import BudgetSummary from '../components/budget/BudgetSummary';
 import BudgetProgress from '../components/budget/BudgetProgress';
 import BudgetAlerts from '../components/budget/BudgetAlerts';
+import AIForecastCard from '../components/budget/AIForecastCard';
 import { useBudget } from '../context/BudgetContext';
 
 const Budget = () => {
-    const { budget, budgetStatus, loading, setBudget: updateBudget } = useBudget();
+    const { budget, budgetStatus, aiForecast, loading, setBudget: updateBudget } = useBudget();
     const [saving, setSaving] = useState(false);
 
     // Handle budget save/update
@@ -71,6 +72,9 @@ const Budget = () => {
                     />
                 )}
             </div>
+
+            {/* AI Forecast Card - Full Width */}
+            {aiForecast && <AIForecastCard forecast={aiForecast} />}
         </div>
     );
 };

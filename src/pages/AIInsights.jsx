@@ -67,7 +67,9 @@ const AIInsights = () => {
             {/* Mood Analysis & Savings Suggestions Row */}
             <div className="grid gap-6 xl:grid-cols-2">
                 <SavingsSuggestions suggestions={suggestions} />
-                <MoodAnalysisCard moodInsights={moodInsights} />
+                <div>
+                    <MoodAnalysisCard moodInsights={moodInsights} />
+                </div>
             </div>
 
             {/* Challenges */}

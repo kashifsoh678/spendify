@@ -12,7 +12,7 @@ const AddTransactionModal = ({ isOpen, onClose, onSubmit, initialData = null }) 
             type: TRANSACTION_TYPES.EXPENSE,
             category: '',
             note: '',
-            mood: 'neutral',
+            mood: 'happy',
             date: new Date().toISOString().split('T')[0]
         }
     });
@@ -53,7 +53,7 @@ const AddTransactionModal = ({ isOpen, onClose, onSubmit, initialData = null }) 
             type: TRANSACTION_TYPES.EXPENSE,
             category: '',
             note: '',
-            mood: 'neutral',
+            mood: 'happy',
             date: new Date().toISOString().split('T')[0]
         });
         onClose();

@@ -1,7 +1,22 @@
 import { Smile, Clock } from 'lucide-react';
 
 const MoodAnalysisCard = ({ moodInsights }) => {
-    if (!moodInsights) return null;
+    // Check if data exists (must have topMood to be valid)
+    if (!moodInsights || !moodInsights.topMood) {
+        return (
+            <div className="rounded-xl sm:rounded-2xl bg-white dark:bg-[#1E1E2D] p-6 shadow-sm border border-gray-100 dark:border-gray-800">
+                <div className="flex items-center gap-2 mb-4">
+                    <Smile className="h-5 w-5 text-gray-400" />
+                    <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
+                        Mood-Based Spending
+                    </h3>
+                </div>
+                <p className="text-sm text-gray-500 dark:text-gray-400 text-center py-4">
+                    No mood data available yet. <br /> Tag your transactions with moods to see insights!
+                </p>
+            </div>
+        );
+    }
 
     return (
         <div className="rounded-xl sm:rounded-2xl bg-white dark:bg-[#1E1E2D] p-4 sm:p-6 shadow-sm ">
