@@ -152,7 +152,7 @@ const Reports = () => {
                     <SummaryCards summary={reportData.summary} />
 
                     {/* Charts Row */}
-                    <div className="grid gap-6 lg:grid-cols-2">
+                    <div className="grid gap-6 xl:grid-cols-2">
                         {reportData.categoryBreakdown && reportData.categoryBreakdown.length > 0 ? (
                             <CategoryPieChart data={getCategoryChartData()} />
                         ) : (

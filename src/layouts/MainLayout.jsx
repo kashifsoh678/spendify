@@ -11,15 +11,20 @@ const MainLayout = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-[#181824]  min-w-[100vw]">
-      <Sidebar isOpen={isSidebarOpen} toggleSidebar={toggleSidebar} />
-      <Navbar toggleSidebar={toggleSidebar} />
+    <div className="layout-grid h-screen overflow-hidden bg-gray-50 dark:bg-[#181824]">
 
-      <div className="p-4 sm:ml-72 pt-24">
-        <Outlet />
+      <Sidebar isOpen={isSidebarOpen} toggleSidebar={toggleSidebar} />
+
+      <div className="layout-content">
+        <Navbar toggleSidebar={toggleSidebar} />
+
+        <main className="p-4 ">
+          <Outlet />
+        </main>
       </div>
     </div>
   );
 };
 
 export default MainLayout;
+

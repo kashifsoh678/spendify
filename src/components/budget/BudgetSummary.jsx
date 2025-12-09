@@ -42,7 +42,7 @@ const BudgetSummary = ({ budgetData }) => {
     ];
 
     return (
-        <div className="grid gap-4 sm:gap-6 md:grid-cols-2 lg:grid-cols-4 mb-6">
+        <div className="grid gap-4 sm:gap-6 md:grid-cols-2 xl:grid-cols-4 mb-6">
             {stats.map((stat, index) => (
                 <div
                     key={index}

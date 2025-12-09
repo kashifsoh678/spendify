@@ -172,7 +172,7 @@ const Dashboard = () => {
       <DashboardHeader currentMonth={currentMonth} />
 
       {/* Section 2: KPI Summary Cards */}
-      <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
+      <div className="grid gap-6 md:grid-cols-2 xl:grid-cols-4">
         <StatCard
           title="Total Income"
           value={`PKR ${(kpiData?.totalIncome || 0).toLocaleString()}`}
@@ -214,7 +214,7 @@ const Dashboard = () => {
       />
 
       {/* Section 4: Spending Breakdown Charts */}
-      <div className="grid gap-6 lg:grid-cols-2">
+      <div className="grid gap-6 xl:grid-cols-2">
         {categorySpendingData ? (
           <CategoryPieChart data={categorySpendingData} />
         ) : (
@@ -236,7 +236,7 @@ const Dashboard = () => {
       </div>
 
       {/* Section 5 & 6: AI Insights and Alerts */}
-      <div className="grid gap-6 lg:grid-cols-3">
+      <div className="grid gap-6 xl:grid-cols-3">
         <AIInsightsList insights={aiInsights} />
         <AlertsList alerts={alerts} />
       </div>

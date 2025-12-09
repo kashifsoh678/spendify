@@ -17,17 +17,18 @@ const Sidebar = ({ isOpen, toggleSidebar }) => {
 
   return (
     <>
-      {/* Mobile overlay */}
+
+      {/* Mobile overlay - only show on mobile when sidebar is open */}
       {isOpen && (
         <div
-          className="fixed inset-0 z-30 bg-gray-900/50 backdrop-blur-sm sm:hidden"
+          className="fixed inset-0 z-30 bg-gray-900/50 backdrop-blur-sm lg:hidden"
           onClick={toggleSidebar}
         />
       )}
 
       <aside
-        className={`fixed left-0 top-0 z-40 h-screen w-72 border-r border-gray-100 bg-white/80 backdrop-blur-xl transition-transform duration-300 dark:border-gray-800 dark:bg-[#1E1E2D]/90 sm:translate-x-0 ${isOpen ? 'translate-x-0' : '-translate-x-full'
-          }`}
+        className={`fixed left-0 top-0 h-screen  w-60 border-r border-gray-100 bg-white/80 backdrop-blur-xl transition-transform duration-300 dark:border-gray-800 dark:bg-[#1E1E2D]/90 lg:translate-x-0 ${isOpen ? 'translate-x-0' : '-translate-x-full'
+          } sidebar-container`}
       >
         <div className="flex h-full flex-col px-4 py-6">
           <div className="mb-8 flex items-center px-2">

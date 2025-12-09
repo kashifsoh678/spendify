@@ -44,9 +44,9 @@ const FilterBar = ({ filters, onFilterChange, onClearFilters }) => {
             </div>
 
             {/* Responsive Grid Layout */}
-            <div className="grid gap-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-4">
+            <div className="grid gap-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 ">
                 {/* Search - Full width on mobile, half on tablet, quarter on desktop */}
-                <div className="sm:col-span-2 lg:col-span-1">
+                <div className="sm:col-span-2 lg:col-span-2 xl:col-span-1">
                     <SearchInput
                         label="Search"
                         placeholder="Search transactions..."
@@ -75,7 +75,7 @@ const FilterBar = ({ filters, onFilterChange, onClearFilters }) => {
                 />
 
                 {/* Date Range - Spans 2 columns on tablet and desktop, stacks on mobile */}
-                <div className="sm:col-span-2 lg:col-span-1">
+                <div className="sm:col-span-2 lg:col-span-4 xl:col-span-1 ">
                     <div className="grid grid-cols-2 gap-2">
                         <DatePicker
                             label="Start Date"

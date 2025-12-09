@@ -1,6 +1,6 @@
 const StatsRow = ({ stats }) => {
     return (
-        <div className="grid gap-4 sm:gap-6 md:grid-cols-3 mb-6">
+        <div className="grid gap-4 sm:gap-6 md:grid-cols-2 xl:grid-cols-3 mb-6">
             {/* Total Income */}
             <div className="group relative overflow-hidden rounded-xl sm:rounded-2xl bg-gradient-to-br from-green-500 to-green-600 p-4 sm:p-6 text-white shadow-lg transition-all hover:shadow-xl">
                 <div className="absolute right-0 top-0 h-20 w-20 sm:h-24 sm:w-24 translate-x-6 -translate-y-6 rounded-full bg-white/10"></div>

@@ -70,25 +70,25 @@ const NotificationSettings = () => {
     ];
 
     return (
-        <div className="bg-white dark:bg-[#1E1E2D] rounded-xl p-6 shadow-sm">
-            <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-6">Notification Preferences</h3>
+        <div className="bg-white dark:bg-[#1E1E2D] rounded-xl p-4 sm:p-6 shadow-sm">
+            <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4 sm:mb-6">Notification Preferences</h3>
 
-            <div className="space-y-6">
+            <div className="space-y-4 sm:space-y-6">
                 {toggles.map((toggle) => (
-                    <div key={toggle.key} className="flex items-center justify-between">
-                        <div className="flex gap-4">
-                            <div className="mt-1 p-2 bg-gray-50 dark:bg-gray-800 rounded-lg h-fit">
+                    <div key={toggle.key} className="flex items-start sm:items-center justify-between gap-3">
+                        <div className="flex gap-3 sm:gap-4 flex-1 min-w-0">
+                            <div className="flex-shrink-0 p-2 bg-gray-50 dark:bg-gray-800 rounded-lg h-fit">
                                 {toggle.icon}
                             </div>
-                            <div>
+                            <div className="flex-1 min-w-0">
                                 <h4 className="text-sm font-medium text-gray-900 dark:text-white">{toggle.title}</h4>
-                                <p className="text-sm text-gray-500 dark:text-gray-400">{toggle.description}</p>
+                                <p className="text-xs sm:text-sm text-gray-500 dark:text-gray-400 mt-0.5">{toggle.description}</p>
                             </div>
                         </div>
 
                         <button
                             onClick={() => handleToggle(toggle.key)}
-                            className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-[var(--color-primary)] focus:ring-offset-2 ${settings[toggle.key] ? 'bg-[var(--color-primary)]' : 'bg-gray-200 dark:bg-gray-700'
+                            className={`flex-shrink-0 relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-[var(--color-primary)] focus:ring-offset-2 ${settings[toggle.key] ? 'bg-[var(--color-primary)]' : 'bg-gray-200 dark:bg-gray-700'
                                 }`}
                         >
                             <span

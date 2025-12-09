@@ -89,15 +89,15 @@ const ProfileSettings = () => {
     };
 
     return (
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <div className="grid grid-cols-1 gap-4 sm:gap-6 xl:grid-cols-2 ">
             {/* Profile Info */}
-            <div className="bg-white dark:bg-[#1E1E2D] rounded-xl p-6 shadow-sm h-fit">
-                <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-6">Profile Information</h3>
+            <div className="bg-white dark:bg-[#1E1E2D] rounded-xl p-4 sm:p-6 shadow-sm">
+                <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4 sm:mb-6">Profile Information</h3>
 
-                <form onSubmit={handleProfileUpdate} className="space-y-6">
-                    <div className="flex flex-col items-center gap-4">
+                <form onSubmit={handleProfileUpdate} className="space-y-4 sm:space-y-6">
+                    <div className="flex flex-col items-center gap-3 sm:gap-4">
                         <div className="relative">
-                            <div className="w-32 h-32 rounded-full bg-gray-200 dark:bg-gray-700 flex items-center justify-center text-4xl font-bold text-gray-500 dark:text-gray-400 overflow-hidden ring-4 ring-white dark:ring-[#1E1E2D] shadow-lg">
+                            <div className="w-24 h-24 sm:w-32 sm:h-32 rounded-full bg-gray-200 dark:bg-gray-700 flex items-center justify-center text-3xl sm:text-4xl font-bold text-gray-500 dark:text-gray-400 overflow-hidden ring-4 ring-white dark:ring-[#1E1E2D] shadow-lg">
                                 {profile.avatar ? (
                                     <img src={profile.avatar} alt="Profile" className="w-full h-full object-cover" />
                                 ) : (
@@ -113,9 +113,9 @@ const ProfileSettings = () => {
                                 type="button"
                                 onClick={() => fileInputRef.current?.click()}
                                 disabled={uploading}
-                                className="absolute bottom-0 right-0 p-2.5 bg-[var(--color-primary)] text-white rounded-full hover:bg-[var(--color-primary-dark)] transition-colors shadow-lg disabled:opacity-70"
+                                className="absolute bottom-0 right-0 p-2 sm:p-2.5 bg-[var(--color-primary)] text-white rounded-full hover:bg-[var(--color-primary-dark)] transition-colors shadow-lg disabled:opacity-70"
                             >
-                                <Camera className="w-5 h-5" />
+                                <Camera className="w-4 h-4 sm:w-5 sm:h-5" />
                             </button>
                             <input
                                 type="file"
@@ -125,7 +125,7 @@ const ProfileSettings = () => {
                                 onChange={handleImageUpload}
                             />
                         </div>
-                        <p className="text-sm text-gray-500 dark:text-gray-400">
+                        <p className="text-xs sm:text-sm text-gray-500 dark:text-gray-400 text-center">
                             Allowed *.jpeg, *.jpg, *.png, *.gif
                         </p>
                     </div>
@@ -139,7 +139,7 @@ const ProfileSettings = () => {
                                     type="text"
                                     value={profile.name}
                                     onChange={(e) => setProfile({ ...profile, name: e.target.value })}
-                                    className="w-full pl-10 pr-4 py-2 rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:ring-2 focus:ring-[var(--color-primary)] focus:border-transparent"
+                                    className="w-full pl-10 pr-4 py-2.5 sm:py-2 rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:ring-2 focus:ring-[var(--color-primary)] focus:border-transparent"
                                     placeholder="John Doe"
                                 />
                             </div>
@@ -153,7 +153,7 @@ const ProfileSettings = () => {
                                     type="email"
                                     value={profile.email}
                                     disabled
-                                    className="w-full pl-10 pr-4 py-2 rounded-lg border border-gray-200 dark:border-gray-700 bg-gray-100 dark:bg-gray-900 text-gray-500 dark:text-gray-500 cursor-not-allowed focus:ring-0 focus:border-gray-200 dark:focus:border-gray-700"
+                                    className="w-full pl-10 pr-4 py-2.5 sm:py-2 rounded-lg border border-gray-200 dark:border-gray-700 bg-gray-100 dark:bg-gray-900 text-gray-500 dark:text-gray-500 cursor-not-allowed focus:ring-0 focus:border-gray-200 dark:focus:border-gray-700"
                                     placeholder="john@example.com"
                                 />
                             </div>
@@ -164,7 +164,7 @@ const ProfileSettings = () => {
                         <button
                             type="submit"
                             disabled={saving}
-                            className="flex items-center gap-2 px-6 py-2.5 bg-[var(--color-primary)] text-white rounded-lg hover:bg-[var(--color-primary-dark)] disabled:opacity-50 transition-colors font-medium shadow-sm"
+                            className="w-full sm:w-auto flex items-center justify-center gap-2 px-6 py-2.5 bg-[var(--color-primary)] text-white rounded-lg hover:bg-[var(--color-primary-dark)] disabled:opacity-50 transition-colors font-medium shadow-sm"
                         >
                             <Save className="w-4 h-4" />
                             {saving ? 'Saving...' : 'Save Changes'}
@@ -174,8 +174,8 @@ const ProfileSettings = () => {
             </div>
 
             {/* Change Password */}
-            <div className="bg-white dark:bg-[#1E1E2D] rounded-xl p-6 shadow-sm h-fit">
-                <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-6">Change Password</h3>
+            <div className="bg-white dark:bg-[#1E1E2D] rounded-xl p-4 sm:p-6 shadow-sm">
+                <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4 sm:mb-6">Change Password</h3>
 
                 <form onSubmit={handleSubmit(onPasswordSubmit)} className="space-y-4">
                     <div>
@@ -185,7 +185,7 @@ const ProfileSettings = () => {
                             <input
                                 type={showCurrentPassword ? "text" : "password"}
                                 {...register("currentPassword", { required: "Current password is required" })}
-                                className="w-full pl-10 pr-10 py-2 rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:ring-2 focus:ring-[var(--color-primary)] focus:border-transparent"
+                                className="w-full pl-10 pr-10 py-2.5 sm:py-2 rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:ring-2 focus:ring-[var(--color-primary)] focus:border-transparent"
                                 placeholder="Enter current password"
                             />
                             <button
@@ -207,7 +207,7 @@ const ProfileSettings = () => {
                                 <input
                                     type={showNewPassword ? "text" : "password"}
                                     {...register("newPassword", { required: "New password is required", minLength: { value: 6, message: "Password must be at least 6 characters" } })}
-                                    className="w-full pl-10 pr-10 py-2 rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:ring-2 focus:ring-[var(--color-primary)] focus:border-transparent"
+                                    className="w-full pl-10 pr-10 py-2.5 sm:py-2 rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:ring-2 focus:ring-[var(--color-primary)] focus:border-transparent"
                                     placeholder="Enter new password"
                                 />
                                 <button
@@ -228,7 +228,7 @@ const ProfileSettings = () => {
                                 <input
                                     type={showConfirmPassword ? "text" : "password"}
                                     {...register("confirmPassword", { required: "Please confirm your password" })}
-                                    className="w-full pl-10 pr-10 py-2 rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:ring-2 focus:ring-[var(--color-primary)] focus:border-transparent"
+                                    className="w-full pl-10 pr-10 py-2.5 sm:py-2 rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:ring-2 focus:ring-[var(--color-primary)] focus:border-transparent"
                                     placeholder="Confirm new password"
                                 />
                                 <button
@@ -247,7 +247,7 @@ const ProfileSettings = () => {
                         <button
                             type="submit"
                             disabled={isSubmitting}
-                            className="px-6 py-2.5 border border-gray-200 dark:border-gray-700 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors disabled:opacity-50 font-medium"
+                            className="w-full sm:w-auto px-6 py-2.5 border border-gray-200 dark:border-gray-700 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors disabled:opacity-50 font-medium"
                         >
                             {isSubmitting ? 'Updating...' : 'Update Password'}
                         </button>

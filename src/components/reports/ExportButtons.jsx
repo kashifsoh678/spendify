@@ -37,7 +37,7 @@ const ExportButtons = ({ selectedMonth }) => {
 
     return (
         <div className="rounded-xl sm:rounded-2xl bg-white dark:bg-[#1E1E2D] p-4 sm:p-6 shadow-sm">
-            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 ">
                 <div>
                     <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
                         Export Report
@@ -47,7 +47,7 @@ const ExportButtons = ({ selectedMonth }) => {
                     </p>
                 </div>
 
-                <div className="flex flex-wrap gap-3">
+                <div className="flex flex-wrap gap-3 justify-center  md:justify-end">
                     <button
                         onClick={handlePDFExport}
                         disabled={exportingPDF}

@@ -59,7 +59,7 @@ const AIInsights = () => {
             </div>
 
             {/* Forecast & Personality Row */}
-            <div className="grid gap-6 md:grid-cols-2 ">
+            <div className="grid gap-6 md:grid-cols-1 xl:grid-cols-2">
                 <ForecastCard forecast={forecast} />
                 <div>
                     <PersonalityCard personality={personality} />
@@ -67,7 +67,7 @@ const AIInsights = () => {
             </div>
 
             {/* Mood Analysis & Savings Suggestions Row */}
-            <div className="grid gap-6 lg:grid-cols-2">
+            <div className="grid gap-6 md:grid-cols-1 xl:grid-cols-2">
                 <SavingsSuggestions suggestions={suggestions} />
                 <div>
                     <MoodAnalysisCard moodInsights={moodInsights} />
