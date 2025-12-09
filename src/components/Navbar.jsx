@@ -40,25 +40,20 @@ const Navbar = ({ toggleSidebar }) => {
 
           <div className="flex items-center gap-3">
             <div className="flex items-center ms-3">
-              <div>
-                <button
-                  type="button"
-                  className="flex items-center gap-3 rounded-full text-sm focus:ring-4 focus:ring-gray-300 dark:focus:ring-gray-600"
-                  aria-expanded="false"
-                >
-                  <span className="sr-only">Open user menu</span>
-                  <div className="h-9 w-9 rounded-full bg-gradient-to-br from-[var(--color-primary)] to-[var(--color-secondary)] flex items-center justify-center text-white font-bold shadow-md overflow-hidden">
-                    {user?.avatar ? (
-                      <img src={user.avatar} alt="Profile" className="w-full h-full object-cover" />
-                    ) : (
-                      user?.name?.charAt(0) || 'U'
-                    )}
-                  </div>
-                  <div className="hidden text-left lg:block">
-                    <p className="text-sm font-semibold text-gray-900 dark:text-white">{user?.name || 'User'}</p>
-                    <p className="text-xs text-gray-500 dark:text-gray-400">Pro Plan</p>
-                  </div>
-                </button>
+              <div className="flex items-center gap-3 rounded-full text-sm focus:ring-4 focus:ring-gray-300 dark:focus:ring-gray-600">
+
+                <span className="sr-only">Open user menu</span>
+                <div className="h-12 w-12 rounded-full bg-gradient-to-br from-[var(--color-primary)] to-[var(--color-secondary)] flex items-center justify-center text-white font-bold shadow-md overflow-hidden">
+                  {user?.avatar ? (
+                    <img src={user.avatar} alt="Profile" className="w-full h-full object-cover" />
+                  ) : (
+                    user?.name?.charAt(0) || 'U'
+                  )}
+                </div>
+                <div className="hidden text-left lg:block  max-w-[150px] ">
+                  <p className="text-sm font-semibold text-gray-900 dark:text-white truncate line-clamp-1">{user?.name || 'User'}</p>
+                </div>
+
               </div>
             </div>
           </div>
