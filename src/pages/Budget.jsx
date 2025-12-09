@@ -8,7 +8,7 @@ import AIForecastCard from '../components/budget/AIForecastCard';
 import { useBudget } from '../context/BudgetContext';
 
 const Budget = () => {
-    const { budget, budgetStatus, aiForecast, loading, setBudget: updateBudget } = useBudget();
+    const { budget, budgetStatus, alerts, aiForecast, loading, setBudget: updateBudget } = useBudget();
     const [saving, setSaving] = useState(false);
 
     // Handle budget save/update
@@ -60,21 +60,19 @@ const Budget = () => {
                     )}
                 </div>
 
+
                 {/* Right Column - Budget Alerts */}
-                {budgetStatus && (
-                    <BudgetAlerts
-                        alerts={budgetStatus.alerts || [{
-                            type: 'info',
-                            message: budgetStatus.alert,
-                            severity: 'medium'
-                        }]}
-                        aiForecast={null}
-                    />
-                )}
+                <BudgetAlerts
+                    alerts={alerts && alerts.length > 0 ? alerts : (budgetStatus?.alerts || [])}
+                    aiForecast={null}
+                />
+
+                {/* AI Forecast Card - Full Width
+                {aiForecast && <AIForecastCard forecast={aiForecast} />} */}
+
             </div>
 
-            {/* AI Forecast Card - Full Width */}
-            {aiForecast && <AIForecastCard forecast={aiForecast} />}
+
         </div>
     );
 };

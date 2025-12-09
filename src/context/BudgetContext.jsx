@@ -1,5 +1,5 @@
 import { createContext, useContext, useState, useEffect, useCallback } from 'react';
-import { getBudget as apiGetBudget, setBudget as apiSetBudget, getBudgetStatus as apiGetBudgetStatus } from '../services/budgetService';
+import { getBudget as apiGetBudget, setBudget as apiSetBudget, getBudgetStatus as apiGetBudgetStatus, getAlerts as apiGetAlerts } from '../services/budgetService';
 import { getAIForecast as apiGetAIForecast } from '../services/aiService';
 import { useAuth } from './AuthContext';
 
@@ -13,6 +13,7 @@ export const BudgetProvider = ({ children }) => {
     const { user } = useAuth();
     const [budget, setBudgetData] = useState(null);
     const [budgetStatus, setBudgetStatusData] = useState(null);
+    const [alerts, setAlerts] = useState([]);
     const [aiForecast, setAIForecast] = useState(null);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState(null);
@@ -70,6 +71,17 @@ export const BudgetProvider = ({ children }) => {
         }
     }, [user?._id]);
 
+    const fetchAlerts = useCallback(async () => {
+        if (!user) return;
+        try {
+            const data = await apiGetAlerts();
+            setAlerts(data || []);
+        } catch (err) {
+            console.error('Error fetching alerts:', err);
+            setAlerts([]);
+        }
+    }, [user?._id]);
+
     const setBudget = async (monthlyBudget) => {
         try {
             const response = await apiSetBudget(monthlyBudget);
@@ -84,6 +96,9 @@ export const BudgetProvider = ({ children }) => {
             // Refresh AI forecast with new budget
             await fetchAIForecast();
 
+            // Refresh alerts
+            await fetchAlerts();
+
             return data.budget || data;
         } catch (err) {
             throw err;
@@ -96,22 +111,25 @@ export const BudgetProvider = ({ children }) => {
             fetchBudget();
             fetchBudgetStatus();
             fetchAIForecast();
+            fetchAlerts();
         } else if (!user) {
             setBudgetData(null);
             setBudgetStatusData(null);
             setAIForecast(null);
         }
-    }, [user?._id, fetchBudget, fetchBudgetStatus, fetchAIForecast]);
+    }, [user?._id, fetchBudget, fetchBudgetStatus, fetchAIForecast, fetchAlerts]);
 
     const value = {
         budget,
         budgetStatus,
+        alerts,
         aiForecast,
         loading,
         error,
         fetchBudget,
         fetchBudgetStatus,
         fetchAIForecast,
+        fetchAlerts,
         setBudget
     };
 

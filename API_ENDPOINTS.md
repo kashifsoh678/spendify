@@ -5,12 +5,15 @@
 This document lists all API endpoints required by the frontend Dashboard module.
 
 ### 1. Monthly Transactions
+
 **Endpoint:** `GET /api/transactions/month/:month`
 
 **Parameters:**
+
 - `month` (string): Month in format `YYYY-MM` (e.g., `2024-12`)
 
 **Response:**
+
 ```json
 {
   "totalIncome": 120000,
@@ -31,9 +34,11 @@ This document lists all API endpoints required by the frontend Dashboard module.
 ---
 
 ### 2. Budget Status
+
 **Endpoint:** `GET /api/budget/status`
 
 **Response:**
+
 ```json
 {
   "monthlyBudget": 100000,
@@ -45,9 +50,11 @@ This document lists all API endpoints required by the frontend Dashboard module.
 ---
 
 ### 3. Upcoming Bills
+
 **Endpoint:** `GET /api/bills/upcoming`
 
 **Response:**
+
 ```json
 {
   "count": 2,
@@ -70,10 +77,50 @@ This document lists all API endpoints required by the frontend Dashboard module.
 
 ---
 
+### 10. Alerts Module
+
+**Endpoint:** `GET /api/alerts`
+
+**Response:**
+
+```json
+{
+  "alerts": [
+    {
+      "id": "1",
+      "type": "danger",
+      "message": "You have exceeded 90% of your Food budget.",
+      "date": "2024-12-09T10:00:00Z",
+      "isRead": false
+    },
+    {
+      "id": "2",
+      "type": "warning",
+      "message": "Electricity Bill is due tomorrow.",
+      "date": "2024-12-08T09:00:00Z",
+      "isRead": false
+    },
+    {
+      "id": "3",
+      "type": "info",
+      "message": "Your Weekly Report is ready.",
+      "date": "2024-12-07T09:00:00Z",
+      "isRead": true
+    }
+  ]
+}
+```
+
+---
+
+---
+
 ### 4. AI Spending Forecast
+
 **Endpoint:** `GET /api/ai/forecast`
 
 **Response:**
+
 ```json
 {
   "predictedOverspending": 18,
@@ -84,9 +131,11 @@ This document lists all API endpoints required by the frontend Dashboard module.
 ---
 
 ### 5. AI Personality Insight
+
 **Endpoint:** `GET /api/ai/personality`
 
 **Response:**
+
 ```json
 {
   "label": "Foodie Spender",
@@ -99,9 +148,11 @@ This document lists all API endpoints required by the frontend Dashboard module.
 ---
 
 ### 6. AI Savings Suggestions
+
 **Endpoint:** `GET /api/ai/savings`
 
 **Response:**
+
 ```json
 {
   "category": "Food",
@@ -113,13 +164,16 @@ This document lists all API endpoints required by the frontend Dashboard module.
 
 ---
 
-### 7. Recent Transactions
+### 9. Recent Transactions
+
 **Endpoint:** `GET /api/transactions?limit=5`
 
 **Query Parameters:**
+
 - `limit` (number): Number of transactions to return (default: 5)
 
 **Response:**
+
 ```json
 [
   {
@@ -146,11 +200,13 @@ This document lists all API endpoints required by the frontend Dashboard module.
 ## Implementation Status
 
 ✅ **Frontend Service Layer Created:** `src/services/dashboardService.js`
+
 - All endpoints defined with dummy data fallback
 - Automatic fallback when backend is unavailable
 - Ready for backend integration
 
 ⏳ **Backend Implementation:** Pending
+
 - All endpoints documented above
 - Response formats defined
 - Ready for backend team to implement
@@ -160,13 +216,13 @@ This document lists all API endpoints required by the frontend Dashboard module.
 ## Usage Example
 
 ```javascript
-import dashboardService from '../services/dashboardService';
+import dashboardService from "../services/dashboardService";
 
 // Fetch all dashboard data
 const data = await dashboardService.getDashboardData();
 
 // Or fetch individual endpoints
-const transactions = await dashboardService.getMonthlyTransactions('2024-12');
+const transactions = await dashboardService.getMonthlyTransactions("2024-12");
 const budget = await dashboardService.getBudgetStatus();
 const bills = await dashboardService.getUpcomingBills();
 ```
