@@ -22,7 +22,12 @@ const AddTransactionModal = ({ isOpen, onClose, onSubmit, initialData = null }) 
     // Update form when initialData changes (for edit mode)
     useEffect(() => {
         if (initialData) {
-            reset(initialData);
+            // Format date to YYYY-MM-DD for date input
+            const formattedData = {
+                ...initialData,
+                date: initialData.date ? new Date(initialData.date).toISOString().split('T')[0] : new Date().toISOString().split('T')[0]
+            };
+            reset(formattedData);
         }
     }, [initialData, reset]);
 
